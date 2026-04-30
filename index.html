@@ -1,130 +1,110 @@
+```html id="index-file-022"
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>WMN3 DNS PRO</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#0f172a;color:#fff;min-height:100vh}
-.login-page{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#020617,#0f172a,#111827)}
-.login-box{width:100%;max-width:460px;background:#111827;padding:42px;border-radius:26px;border:1px solid #1f2937;text-align:center}
-.logo{width:82px;height:82px;margin:auto;border-radius:24px;background:linear-gradient(135deg,#2563eb,#10b981);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;margin-bottom:18px}
-input,textarea,select{width:100%;padding:14px;margin-top:10px;border-radius:14px;border:1px solid #334155;background:#020617;color:#fff;outline:none}
-textarea{height:100px;resize:vertical}
-button{border:none;padding:14px;border-radius:14px;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
-.login-btn,.blue{background:#2563eb}.green{background:#10b981}.red{background:#ef4444}.gold{background:#d97706}
-.error{display:none;color:#ef4444;margin-top:12px}
-#dashboard{display:none}
-.topbar{background:#111827;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;border-bottom:1px solid #1f2937}
-.wrapper{max-width:1500px;margin:auto;padding:25px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
-.card,.panel{background:#111827;padding:22px;border-radius:18px;border:1px solid #1f2937}
-.panel{margin-top:25px}
-.history-item{padding:10px;border-bottom:1px solid #1f2937;cursor:pointer}
-.history-item:hover{background:#1e293b}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:left;font-size:14px}
-.status-on{color:#10b981;font-weight:bold}.status-off{color:#ef4444;font-weight:bold}
-label{display:block;margin-top:12px;font-weight:700;color:#cbd5e1}
-</style>
+<title>WMN3 DNS PRO ULTRA</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="login-page" id="loginPage">
-<div class="login-box">
+<!-- LOGIN -->
+<div id="loginPage" class="screen">
+<div class="login-box glow">
+
 <div class="logo">W</div>
+
 <h1>WMN3 DNS PRO</h1>
-<p>Secure access</p>
+<p>Secure Hacker Access</p>
+
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
-<button class="login-btn" onclick="login()">Sign In</button>
-<div class="error" id="error">Invalid Login</div>
+
+<button onclick="login()">LOGIN</button>
+
+<div id="errorMsg"></div>
+
 </div>
 </div>
 
-<div id="dashboard">
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
 
-<div class="topbar">
+<header class="topbar">
 <div>
-<h2>WMN3 DNS PRO</h2>
+<h2>WMN3 DNS PRO ULTRA</h2>
 <div id="welcome"></div>
 </div>
-<button class="red" onclick="logout()">Logout</button>
+
+<div class="top-actions">
+<button onclick="toggleTheme()">Theme</button>
+<button onclick="logout()" class="red">Logout</button>
+</div>
+</header>
+
+<main class="wrapper">
+
+<!-- STATS -->
+<section id="statsGrid" class="grid stats-grid"></section>
+
+<!-- TOOLS -->
+<section class="grid">
+
+<div class="card glow">
+<h3>SPF Generator</h3>
+<textarea id="spfDomains" placeholder="Domains"></textarea>
+<textarea id="spfSubs" placeholder="Subdomains"></textarea>
+<textarea id="spfIps" placeholder="IPs"></textarea>
+<button onclick="generateSPF()">Generate SPF</button>
 </div>
 
-<div class="wrapper">
+<div class="card glow">
+<h3>MX Generator</h3>
+<textarea id="mxDomains" placeholder="Domains"></textarea>
+<textarea id="mxSubs" placeholder="Subdomains"></textarea>
+<textarea id="mxIps" placeholder="IPs"></textarea>
+<button onclick="generateMX()">Generate MX</button>
+</div>
+
+<div class="card glow">
+<h3>A Generator</h3>
+<textarea id="aDomains" placeholder="Domains"></textarea>
+<textarea id="aSubs" placeholder="Subdomains"></textarea>
+<textarea id="aIps" placeholder="IPs"></textarea>
+<button onclick="generateA()">Generate A</button>
+</div>
+
+</section>
+
+<!-- OUTPUT -->
+<section class="card glow">
+<h3>Terminal Output</h3>
+<textarea id="output" class="terminal"></textarea>
+
+<div class="row">
+<button onclick="copyOutput()">Copy</button>
+<button onclick="exportTXT()">TXT</button>
+<button onclick="exportCSV()">CSV</button>
+<button onclick="exportJSON()">JSON</button>
+</div>
+</section>
+
+<!-- HISTORY -->
+<section class="card glow">
+<h3>My History</h3>
+<div id="historyList"></div>
+</section>
+
+<!-- ADMIN PANEL -->
+<section id="adminPanel" class="card glow" style="display:none">
+
+<h2>👑 Admin Center</h2>
 
 <div class="grid">
 
-<!-- SPF -->
-<div class="card">
-<h3>SPF Generator</h3>
-
-<label>Domains</label>
-<textarea id="spfDomains" placeholder="example.com"></textarea>
-
-<label>Subdomains (optional)</label>
-<textarea id="spfSubs" placeholder="mail&#10;www&#10;smtp&#10;api"></textarea>
-
-<label>IPs</label>
-<textarea id="spfIps" placeholder="1.1.1.1"></textarea>
-
-<button class="blue" onclick="generateSPF()">Generate</button>
-</div>
-
-<!-- MX -->
-<div class="card">
-<h3>MX Generator</h3>
-
-<label>Domains</label>
-<textarea id="mxDomains" placeholder="example.com"></textarea>
-
-<label>Subdomains (optional)</label>
-<textarea id="mxSubs" placeholder="mail&#10;mx&#10;smtp"></textarea>
-
-<label>IPs</label>
-<textarea id="mxIps" placeholder="1.1.1.1"></textarea>
-
-<button class="blue" onclick="generateMX()">Generate</button>
-</div>
-
-<!-- A -->
-<div class="card">
-<h3>A Generator</h3>
-
-<label>Domains</label>
-<textarea id="aDomains" placeholder="example.com"></textarea>
-
-<label>Subdomains (optional)</label>
-<textarea id="aSubs" placeholder="www&#10;api&#10;cdn"></textarea>
-
-<label>IPs</label>
-<textarea id="aIps" placeholder="1.1.1.1"></textarea>
-
-<button class="blue" onclick="generateA()">Generate</button>
-</div>
-
-</div>
-
-<div class="panel">
-<h3>Output</h3>
-<textarea id="output" style="height:220px"></textarea>
-<button class="green" onclick="copyOutput()">Copy</button>
-</div>
-
-<div class="panel">
-<h3>My History</h3>
-<div id="historyList"></div>
-</div>
-
-<div class="panel" id="adminPanel" style="display:none">
-
-<h2 style="color:#f59e0b">👑 Admin Panel</h2>
-
-<h3 style="margin-top:20px">Add User</h3>
-
+<div>
+<h3>Add User</h3>
 <input type="text" id="newUser" placeholder="Username">
 <input type="password" id="newPass" placeholder="Password">
 
@@ -133,10 +113,17 @@ label{display:block;margin-top:12px;font-weight:700;color:#cbd5e1}
 <option value="admin">admin</option>
 </select>
 
-<button class="gold" onclick="addUser()">Add User</button>
+<button onclick="addUser()">Add User</button>
+</div>
 
-<h3 style="margin-top:25px">Users List</h3>
+<div>
+<h3>Search User</h3>
+<input type="text" id="searchUser" placeholder="Search..." onkeyup="renderUsers()">
+</div>
 
+</div>
+
+<h3>Users List</h3>
 <table>
 <thead>
 <tr>
@@ -150,9 +137,8 @@ label{display:block;margin-top:12px;font-weight:700;color:#cbd5e1}
 <tbody id="usersTable"></tbody>
 </table>
 
-<h3 style="margin-top:30px">Users History</h3>
-
-<input type="text" id="searchHistoryUser" placeholder="Search by username..." onkeyup="renderAdminHistory()">
+<h3>Users History</h3>
+<input type="text" id="searchHistoryUser" placeholder="Search history..." onkeyup="renderAdminHistory()">
 
 <table>
 <thead>
@@ -165,205 +151,15 @@ label{display:block;margin-top:12px;font-weight:700;color:#cbd5e1}
 <tbody id="historyAdminTable"></tbody>
 </table>
 
+<h3>Activity Logs</h3>
+<div id="logsBox"></div>
+
+</section>
+
+</main>
 </div>
 
-</div>
-</div>
-
-<script>
-let USERS=JSON.parse(localStorage.getItem("usersDB"))||[
-{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-"},
-{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-"},
-{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-"}
-];
-
-let currentUser=null;
-
-function saveUsers(){localStorage.setItem("usersDB",JSON.stringify(USERS));}
-
-function login(){
-let u=username.value.trim();
-let p=password.value.trim();
-let found=USERS.find(x=>x.user===u&&x.pass===p);
-
-if(found){
-currentUser=found;
-found.online=true;
-found.lastSeen=new Date().toLocaleString();
-saveUsers();
-
-loginPage.style.display="none";
-dashboard.style.display="block";
-welcome.innerHTML="👤 "+found.user+" ("+found.role+")";
-
-renderHistory();
-
-if(found.role.toLowerCase()==="admin"){
-adminPanel.style.display="block";
-renderUsers();
-renderAdminHistory();
-}
-}else error.style.display="block";
-}
-
-function logout(){
-if(currentUser){
-let f=USERS.find(x=>x.user===currentUser.user);
-if(f){
-f.online=false;
-f.lastSeen=new Date().toLocaleString();
-saveUsers();
-}}
-location.reload();
-}
-
-function lines(id){
-return document.getElementById(id).value.split('\n').map(x=>x.trim()).filter(x=>x);
-}
-
-function setOutput(text){
-output.value=text.trim();
-saveHistory(text.trim());
-}
-
-function saveHistory(result){
-let key="history_"+currentUser.user;
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-h.unshift({date:new Date().toLocaleString(),data:result});
-h=h.slice(0,30);
-
-localStorage.setItem(key,JSON.stringify(h));
-
-renderHistory();
-if(currentUser.role==="admin")renderAdminHistory();
-}
-
-function renderHistory(){
-let key="history_"+currentUser.user;
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-historyList.innerHTML="";
-
-h.forEach(item=>{
-let div=document.createElement("div");
-div.className="history-item";
-div.innerHTML=item.date;
-div.onclick=()=>output.value=item.data;
-historyList.appendChild(div);
-});
-}
-
-function generateSPF(){
-let d=lines("spfDomains"),s=lines("spfSubs"),i=lines("spfIps");
-let txt=i.map(ip=>"ip4:"+ip).join(" ");
-let out="";
-
-d.forEach(domain=>{
-if(s.length){
-s.forEach(sub=>out+=`${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`);
-}else{
-out+=`${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;
-}
-});
-
-setOutput(out);
-}
-
-function generateMX(){
-let d=lines("mxDomains"),s=lines("mxSubs"),i=lines("mxIps").join(";");
-let out="";
-
-d.forEach(domain=>{
-if(s.length){
-s.forEach(sub=>out+=`${domain},${sub},TXT,MXrecords:${i}\n`);
-}else{
-out+=`${domain},${domain},TXT,MXrecords:${i}\n`;
-}
-});
-
-setOutput(out);
-}
-
-function generateA(){
-let d=lines("aDomains"),s=lines("aSubs"),i=lines("aIps").join(";");
-let out="";
-
-d.forEach(domain=>{
-if(s.length){
-s.forEach(sub=>out+=`${domain},${sub},TXT,Arecords:${i}\n`);
-}else{
-out+=`${domain},${domain},TXT,Arecords:${i}\n`;
-}
-});
-
-setOutput(out);
-}
-
-function copyOutput(){
-output.select();
-document.execCommand("copy");
-}
-
-function addUser(){
-let u=newUser.value.trim();
-let p=newPass.value.trim();
-let r=newRole.value;
-
-if(!u||!p)return;
-if(USERS.find(x=>x.user===u))return alert("User exists");
-
-USERS.push({user:u,pass:p,role:r,online:false,lastSeen:"-"});
-saveUsers();
-renderUsers();
-
-newUser.value="";
-newPass.value="";
-}
-
-function deleteUser(name){
-if(name==="admin")return;
-USERS=USERS.filter(x=>x.user!==name);
-saveUsers();
-renderUsers();
-renderAdminHistory();
-}
-
-function renderUsers(){
-usersTable.innerHTML="";
-USERS.forEach(u=>{
-let tr=document.createElement("tr");
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${u.role}</td>
-<td class="${u.online?'status-on':'status-off'}">${u.online?'Online':'Offline'}</td>
-<td>${u.lastSeen}</td>
-<td><button class="red" onclick="deleteUser('${u.user}')">Delete</button></td>`;
-usersTable.appendChild(tr);
-});
-}
-
-function renderAdminHistory(){
-historyAdminTable.innerHTML="";
-let search=searchHistoryUser.value.toLowerCase().trim();
-
-USERS.forEach(u=>{
-if(search && !u.user.toLowerCase().includes(search)) return;
-
-let key="history_"+u.user;
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-h.forEach(item=>{
-let tr=document.createElement("tr");
-let preview=item.data.substring(0,80).replace(/\n/g," ");
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${item.date}</td>
-<td>${preview}...</td>`;
-historyAdminTable.appendChild(tr);
-});
-});
-}
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
+```
