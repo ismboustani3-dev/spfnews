@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>DNS Tools Pro Login</title>
+<title>WMN3 DNS PRO</title>
 
 <style>
 *{
@@ -14,9 +14,9 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#e5e7eb;
+background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
 min-height:100vh;
-color:#111827;
+color:#fff;
 }
 
 /* LOGIN */
@@ -31,91 +31,109 @@ padding:20px;
 .login-box{
 width:100%;
 max-width:430px;
-background:#f3f4f6;
-padding:35px;
-border-radius:24px;
-box-shadow:0 12px 30px rgba(0,0,0,.08);
+background:#ffffff;
+padding:42px 34px;
+border-radius:28px;
+box-shadow:0 25px 70px rgba(0,0,0,.30);
 text-align:center;
+animation:fadeUp .7s ease;
 }
 
-.logo{
-width:70px;
-height:70px;
+.logo-icon{
+width:74px;
+height:74px;
 margin:auto;
-border-radius:18px;
-background:#2563eb;
+border-radius:22px;
+background:linear-gradient(135deg,#2563eb,#10b981);
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 font-size:34px;
 color:#fff;
-margin-bottom:18px;
+font-weight:900;
+box-shadow:0 15px 30px rgba(37,99,235,.25);
 }
 
 .login-box h1{
-font-size:42px;
-font-weight:800;
+margin-top:20px;
+font-size:38px;
+font-weight:900;
 color:#2563eb;
-margin-bottom:10px;
 }
 
 .login-box p{
-font-size:20px;
-color:#4b5563;
-line-height:1.5;
-margin-bottom:35px;
-}
-
-.field{
-text-align:left;
-margin-bottom:18px;
-}
-
-.field label{
-display:block;
-font-weight:700;
-margin-bottom:8px;
-}
-
-.field input{
-width:100%;
-padding:16px;
-border-radius:14px;
-border:2px solid #d1d5db;
-outline:none;
+margin-top:10px;
+color:#64748b;
 font-size:18px;
-background:#fff;
+line-height:1.5;
+margin-bottom:26px;
 }
 
-.field input:focus{
-border-color:#2563eb;
+label{
+display:block;
+text-align:left;
+margin-top:14px;
+margin-bottom:8px;
+font-weight:800;
+color:#111827;
+font-size:14px;
 }
 
-.login-btn{
+input,textarea{
 width:100%;
 padding:16px;
+border-radius:16px;
+border:2px solid #e5e7eb;
+font-size:16px;
+background:#fff;
+color:#111827;
+outline:none;
+transition:.2s;
+}
+
+textarea{
+height:100px;
+resize:vertical;
+}
+
+input:focus,textarea:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+
+button{
 border:none;
-border-radius:14px;
-font-size:28px;
-font-weight:800;
-color:#fff;
+border-radius:16px;
 cursor:pointer;
-background:linear-gradient(90deg,#3b82f6,#22c55e);
-margin-top:12px;
-box-shadow:0 10px 20px rgba(59,130,246,.2);
+font-weight:900;
+color:#fff;
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.login-btn,.action{
+width:100%;
+padding:16px;
+margin-top:22px;
+font-size:22px;
+background:linear-gradient(135deg,#3b82f6,#10b981);
+box-shadow:0 12px 25px rgba(59,130,246,.22);
 }
 
 .error{
-display:none;
 margin-top:14px;
-font-weight:700;
 color:#ef4444;
+font-weight:700;
+display:none;
 }
 
-.footer-login{
+.footer{
 margin-top:28px;
-font-size:15px;
-color:#6b7280;
+font-size:14px;
+color:#64748b;
 }
 
 /* DASHBOARD */
@@ -124,146 +142,133 @@ display:none;
 }
 
 .topbar{
+padding:20px 28px;
 background:#111827;
-color:#fff;
-padding:18px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
 gap:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.brand{
+font-size:28px;
+font-weight:900;
+color:#10b981;
+}
+
+.user{
+font-weight:700;
+color:#cbd5e1;
 }
 
 .logout{
-border:none;
-padding:12px 18px;
-border-radius:12px;
+padding:12px 20px;
 background:#ef4444;
-color:#fff;
-font-weight:700;
-cursor:pointer;
 }
 
 .wrapper{
+padding:25px;
 max-width:1500px;
 margin:auto;
-padding:25px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
+gap:22px;
 }
 
 .card,.panel{
-background:#fff;
-padding:22px;
-border-radius:18px;
-box-shadow:0 8px 20px rgba(0,0,0,.05);
+background:#111827;
+padding:24px;
+border-radius:22px;
+border:1px solid #1f2937;
+box-shadow:0 15px 35px rgba(0,0,0,.20);
 }
 
-.card h3,.panel h3{
+.card h2{
 margin-bottom:15px;
+color:#10b981;
 }
-
-textarea,input,select{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #d1d5db;
-outline:none;
-margin-top:10px;
-}
-
-textarea{
-height:100px;
-resize:vertical;
-}
-
-button{
-border:none;
-padding:12px;
-border-radius:12px;
-cursor:pointer;
-font-weight:700;
-color:#fff;
-margin-top:12px;
-}
-
-.blue{background:#2563eb;}
-.red{background:#ef4444;}
-.green{background:#10b981;}
-.gold{background:#d97706;}
 
 .panel{
 margin-top:25px;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
+#output{
+height:240px;
+background:#020617;
+color:#fff;
+border:1px solid #1f2937;
 }
 
-th,td{
-padding:10px;
-border-bottom:1px solid #e5e7eb;
-text-align:left;
-font-size:14px;
-vertical-align:top;
+.row{
+display:flex;
+gap:14px;
+margin-top:16px;
+flex-wrap:wrap;
 }
 
-.status-on{
-color:#10b981;
-font-weight:bold;
+.row button{
+flex:1;
+padding:14px;
+font-size:16px;
 }
 
-.status-off{
-color:#ef4444;
-font-weight:bold;
-}
+.copy{background:#10b981;}
+.clear{background:#ef4444;}
 
 .history-item{
-padding:10px;
-border-bottom:1px solid #e5e7eb;
+padding:12px;
+border-bottom:1px solid #1f2937;
 cursor:pointer;
-border-radius:10px;
+line-height:1.5;
 }
 
 .history-item:hover{
-background:#f9fafb;
+background:#1e293b;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(35px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 </style>
 </head>
-
 <body>
 
 <!-- LOGIN -->
 <div class="login-page" id="loginPage">
+
 <div class="login-box">
 
-<div class="logo">🌐</div>
+<div class="logo-icon">W</div>
 
-<h1>DNS Tools Pro</h1>
+<h1>WMN3 DNS PRO</h1>
 
 <p>Enter your credentials to access the dashboard</p>
 
-<div class="field">
 <label>Username</label>
 <input type="text" id="username" placeholder="Enter username">
-</div>
 
-<div class="field">
 <label>Password</label>
 <input type="password" id="password" placeholder="Enter password">
-</div>
 
 <button class="login-btn" onclick="login()">Sign In</button>
 
-<div class="error" id="error">Invalid Login</div>
+<div class="error" id="error">Invalid Username or Password</div>
 
-<div class="footer-login">© 2024 DNS Tools Pro</div>
+<div class="footer">
+© 2026 WMN3 DNS Professional Suite
+</div>
 
 </div>
 </div>
@@ -272,12 +277,12 @@ background:#f9fafb;
 <div id="dashboard">
 
 <div class="topbar">
-<div>
-<h2>DNS Tools Pro</h2>
-<div id="welcome"></div>
-</div>
+<div class="brand">WMN3 DNS PRO</div>
 
+<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+<div class="user" id="userText"></div>
 <button class="logout" onclick="logout()">Logout</button>
+</div>
 </div>
 
 <div class="wrapper">
@@ -285,83 +290,61 @@ background:#f9fafb;
 <div class="grid">
 
 <div class="card">
-<h3>SPF Generator</h3>
-<textarea id="spfDomains" placeholder="Domains"></textarea>
-<textarea id="spfIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateSPF()">Generate</button>
+<h2>SPF Records</h2>
+
+<label>Domains</label>
+<textarea id="spfDomains"></textarea>
+
+<label>IPs</label>
+<textarea id="spfIps"></textarea>
+
+<button class="action" onclick="generateSPF()">Generate SPF</button>
 </div>
 
 <div class="card">
-<h3>MX Generator</h3>
-<textarea id="mxDomains" placeholder="Domains"></textarea>
-<textarea id="mxIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateMX()">Generate</button>
+<h2>MX Records</h2>
+
+<label>Domains</label>
+<textarea id="mxDomains"></textarea>
+
+<label>IPs</label>
+<textarea id="mxIps"></textarea>
+
+<button class="action" onclick="generateMX()">Generate MX</button>
 </div>
 
 <div class="card">
-<h3>A Generator</h3>
-<textarea id="aDomains" placeholder="Domains"></textarea>
-<textarea id="aIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateA()">Generate</button>
+<h2>A Records</h2>
+
+<label>Domains</label>
+<textarea id="aDomains"></textarea>
+
+<label>IPs</label>
+<textarea id="aIps"></textarea>
+
+<button class="action" onclick="generateA()">Generate A</button>
 </div>
 
 </div>
 
 <div class="panel">
-<h3>Output</h3>
-<textarea id="output" style="height:220px"></textarea>
-<button class="green" onclick="copyOutput()">Copy</button>
+
+<h2>Output Console</h2>
+
+<textarea id="output" readonly></textarea>
+
+<div class="row">
+<button class="copy" onclick="copyOutput()">Copy</button>
+<button class="clear" onclick="clearAll()">Clear</button>
+</div>
+
 </div>
 
 <div class="panel">
-<h3>My History</h3>
+
+<h2>My History</h2>
+
 <div id="historyList"></div>
-</div>
-
-<!-- ADMIN -->
-<div class="panel" id="adminPanel" style="display:none">
-
-<h2 style="color:#d97706;">👑 Admin Panel</h2>
-
-<h3 style="margin-top:20px;">Add User</h3>
-
-<input type="text" id="newUser" placeholder="Username">
-<input type="password" id="newPass" placeholder="Password">
-
-<select id="newRole">
-<option value="member">member</option>
-<option value="admin">admin</option>
-</select>
-
-<button class="gold" onclick="addUser()">Add User</button>
-
-<h3 style="margin-top:25px;">Users List</h3>
-
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Role</th>
-<th>Status</th>
-<th>Last Seen</th>
-<th>Delete</th>
-</tr>
-</thead>
-<tbody id="usersTable"></tbody>
-</table>
-
-<h3 style="margin-top:30px;">Users History</h3>
-
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Date</th>
-<th>Preview</th>
-</tr>
-</thead>
-<tbody id="historyAdminTable"></tbody>
-</table>
 
 </div>
 
@@ -369,57 +352,47 @@ background:#f9fafb;
 </div>
 
 <script>
-let USERS = JSON.parse(localStorage.getItem("usersDB")) || [
-{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-"},
-{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-"},
-{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-"}
+const USERS = [
+{user:"admin",pass:"123456"},
+{user:"user1",pass:"111111"},
+{user:"user2",pass:"222222"}
 ];
 
-let currentUser=null;
-
-function saveUsers(){
-localStorage.setItem("usersDB",JSON.stringify(USERS));
-}
+let currentUser="";
 
 function login(){
+
 let u=username.value.trim();
 let p=password.value.trim();
 
 let found=USERS.find(x=>x.user===u && x.pass===p);
 
 if(found){
-currentUser=found;
-found.online=true;
-found.lastSeen=new Date().toLocaleString();
-saveUsers();
+
+currentUser=found.user;
 
 loginPage.style.display="none";
 dashboard.style.display="block";
 
-welcome.innerHTML="👤 "+found.user+" ("+found.role+")";
+userText.innerHTML="👤 "+found.user;
 
 renderHistory();
 
-if(found.role==="admin"){
-adminPanel.style.display="block";
-renderUsers();
-}
 }else{
 error.style.display="block";
 }
+
 }
 
 function logout(){
-if(currentUser){
-let f=USERS.find(x=>x.user===currentUser.user);
-if(f){
-f.online=false;
-f.lastSeen=new Date().toLocaleString();
-saveUsers();
-}
-}
 location.reload();
 }
+
+document.addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+login();
+}
+});
 
 function lines(id){
 return document.getElementById(id).value
@@ -434,7 +407,11 @@ saveHistory(text.trim());
 }
 
 function saveHistory(result){
-let key="history_"+currentUser.user;
+
+if(!result)return;
+
+let key="history_"+currentUser;
+
 let h=JSON.parse(localStorage.getItem(key)||"[]");
 
 h.unshift({
@@ -442,36 +419,40 @@ date:new Date().toLocaleString(),
 data:result
 });
 
-h=h.slice(0,30);
+h=h.slice(0,25);
 
 localStorage.setItem(key,JSON.stringify(h));
-renderHistory();
 
-if(currentUser.role==="admin"){
-renderAdminHistory();
-}
+renderHistory();
 }
 
 function renderHistory(){
-let key="history_"+currentUser.user;
+
+let key="history_"+currentUser;
+
 let h=JSON.parse(localStorage.getItem(key)||"[]");
 
 historyList.innerHTML="";
 
 h.forEach(item=>{
-let div=document.createElement("div");
-div.className="history-item";
-div.innerHTML=item.date;
 
-div.onclick=()=>{
+let div=document.createElement("div");
+
+div.className="history-item";
+
+div.innerHTML="<b>"+item.date+"</b>";
+
+div.onclick=function(){
 output.value=item.data;
 };
 
 historyList.appendChild(div);
+
 });
 }
 
 function generateSPF(){
+
 let d=lines("spfDomains");
 let i=lines("spfIps");
 
@@ -487,6 +468,7 @@ setOutput(out);
 }
 
 function generateMX(){
+
 let d=lines("mxDomains");
 let i=lines("mxIps").join(";");
 
@@ -500,6 +482,7 @@ setOutput(out);
 }
 
 function generateA(){
+
 let d=lines("aDomains");
 let i=lines("aIps").join(";");
 
@@ -517,89 +500,8 @@ output.select();
 document.execCommand("copy");
 }
 
-function addUser(){
-let u=newUser.value.trim();
-let p=newPass.value.trim();
-let r=newRole.value;
-
-if(!u || !p)return;
-
-if(USERS.find(x=>x.user===u)){
-alert("User exists");
-return;
-}
-
-USERS.push({
-user:u,
-pass:p,
-role:r,
-online:false,
-lastSeen:"-"
-});
-
-saveUsers();
-renderUsers();
-
-newUser.value="";
-newPass.value="";
-}
-
-function deleteUser(name){
-if(name==="admin") return;
-
-USERS=USERS.filter(x=>x.user!==name);
-
-saveUsers();
-renderUsers();
-}
-
-function renderUsers(){
-usersTable.innerHTML="";
-
-USERS.forEach(u=>{
-
-let tr=document.createElement("tr");
-
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${u.role}</td>
-<td class="${u.online?'status-on':'status-off'}">${u.online?'Online':'Offline'}</td>
-<td>${u.lastSeen}</td>
-<td><button class="red" onclick="deleteUser('${u.user}')">Delete</button></td>
-`;
-
-usersTable.appendChild(tr);
-
-});
-
-renderAdminHistory();
-}
-
-function renderAdminHistory(){
-historyAdminTable.innerHTML="";
-
-USERS.forEach(u=>{
-
-let key="history_"+u.user;
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-h.forEach(item=>{
-
-let tr=document.createElement("tr");
-
-let preview=item.data.substring(0,80).replace(/\n/g," ");
-
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${item.date}</td>
-<td>${preview}...</td>
-`;
-
-historyAdminTable.appendChild(tr);
-
-});
-
-});
+function clearAll(){
+document.querySelectorAll("textarea").forEach(t=>t.value="");
 }
 </script>
 
