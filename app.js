@@ -1,160 +1,123 @@
+/* ===========================
+ADMIN FULL ACCESS VERSION
+BADDEL BIH app.js KAMEL
+=========================== */
+
 let USERS = JSON.parse(localStorage.getItem("usersDB")) || [
-{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-"},
-{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-"},
-{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-"}
+{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-",blocked:false},
+{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-",blocked:false},
+{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-",blocked:false}
 ];
 
-let currentUser = null;
+let currentUser=null;
 
-/* ---------- HELPERS ---------- */
+/* helpers */
 function saveUsers(){
-localStorage.setItem("usersDB", JSON.stringify(USERS));
+localStorage.setItem("usersDB",JSON.stringify(USERS));
 }
 
 function byId(id){
 return document.getElementById(id);
 }
 
-function lines(id){
-return byId(id).value
-.split('\n')
-.map(x=>x.trim())
-.filter(x=>x);
-}
-
 function now(){
 return new Date().toLocaleString();
 }
 
-function toast(msg){
-alert(msg);
+function lines(id){
+return byId(id).value.split('\n').map(x=>x.trim()).filter(x=>x);
 }
 
-function downloadFile(name, content, type="text/plain"){
-const blob = new Blob([content], {type});
-const a = document.createElement("a");
-a.href = URL.createObjectURL(blob);
-a.download = name;
-a.click();
-URL.revokeObjectURL(a.href);
-}
-
-/* ---------- LOGS ---------- */
-function addLog(txt){
-let logs = JSON.parse(localStorage.getItem("activityLogs") || "[]");
+function logAction(txt){
+let logs=JSON.parse(localStorage.getItem("activityLogs")||"[]");
 logs.unshift(now()+" - "+txt);
-logs = logs.slice(0,100);
-localStorage.setItem("activityLogs", JSON.stringify(logs));
+logs=logs.slice(0,200);
+localStorage.setItem("activityLogs",JSON.stringify(logs));
 renderLogs();
 }
 
-function renderLogs(){
-const box = byId("logsBox");
-if(!box) return;
+/* LOGIN */
+function login(){
 
-let logs = JSON.parse(localStorage.getItem("activityLogs") || "[]");
-box.innerHTML = "";
+let u=byId("username").value.trim();
+let p=byId("password").value.trim();
 
-logs.forEach(x=>{
-let div = document.createElement("div");
-div.className = "log-item";
-div.textContent = x;
-box.appendChild(div);
-});
+let found=USERS.find(x=>x.user===u && x.pass===p);
+
+if(!found){
+byId("errorMsg").innerText="Invalid Login";
+return;
 }
 
-/* ---------- LOGIN ---------- */
-function login(){
-let u = byId("username").value.trim();
-let p = byId("password").value.trim();
+if(found.blocked){
+byId("errorMsg").innerText="Account Blocked";
+return;
+}
 
-let found = USERS.find(x=>x.user===u && x.pass===p);
+currentUser=found;
+found.online=true;
+found.lastSeen=now();
 
-if(found){
-currentUser = found;
-found.online = true;
-found.lastSeen = now();
 saveUsers();
 
-byId("loginPage").style.display = "none";
-byId("dashboard").style.display = "block";
-byId("welcome").innerHTML = "👤 "+found.user+" ("+found.role+")";
+byId("loginPage").style.display="none";
+byId("dashboard").style.display="block";
+byId("welcome").innerHTML="👤 "+found.user+" ("+found.role+")";
 
 renderStats();
 renderHistory();
 
-if(found.role.toLowerCase()==="admin"){
-byId("adminPanel").style.display = "block";
+if(found.role==="admin"){
+byId("adminPanel").style.display="block";
 renderUsers();
 renderAdminHistory();
 renderLogs();
 }
 
-addLog(found.user+" logged in");
-
-}else{
-byId("errorMsg").innerText = "Invalid username or password";
-}
+logAction(found.user+" logged in");
 }
 
 function logout(){
+
 if(currentUser){
-let f = USERS.find(x=>x.user===currentUser.user);
+let f=USERS.find(x=>x.user===currentUser.user);
 if(f){
-f.online = false;
-f.lastSeen = now();
+f.online=false;
+f.lastSeen=now();
 saveUsers();
-addLog(f.user+" logged out");
+logAction(f.user+" logged out");
 }
 }
+
 location.reload();
 }
 
-/* ---------- STATS ---------- */
-function renderStats(){
-let total = USERS.length;
-let online = USERS.filter(x=>x.online).length;
-
-let all = 0;
-USERS.forEach(u=>{
-let h = JSON.parse(localStorage.getItem("history_"+u.user) || "[]");
-all += h.length;
-});
-
-let topUser = "-";
-let topCount = -1;
-
-USERS.forEach(u=>{
-let h = JSON.parse(localStorage.getItem("history_"+u.user) || "[]");
-if(h.length > topCount){
-topCount = h.length;
-topUser = u.user;
-}
-});
-
-byId("statsGrid").innerHTML = `
-<div class="stat-box"><div>Users</div><div class="num">${total}</div></div>
-<div class="stat-box"><div>Online</div><div class="num">${online}</div></div>
-<div class="stat-box"><div>Total Logs</div><div class="num">${all}</div></div>
-<div class="stat-box"><div>Top User</div><div class="num">${topUser}</div></div>
-`;
+/* OUTPUT */
+function setOutput(txt){
+byId("output").value=txt.trim();
+saveHistory(txt.trim());
 }
 
-/* ---------- HISTORY ---------- */
+function copyOutput(){
+byId("output").select();
+document.execCommand("copy");
+alert("Copied");
+}
+
+/* HISTORY */
 function saveHistory(result){
-if(!currentUser) return;
 
-let key = "history_"+currentUser.user;
-let h = JSON.parse(localStorage.getItem(key) || "[]");
+let key="history_"+currentUser.user;
+let h=JSON.parse(localStorage.getItem(key)||"[]");
 
 h.unshift({
-date: now(),
-data: result
+date:now(),
+data:result
 });
 
-h = h.slice(0,30);
+h=h.slice(0,50);
 
-localStorage.setItem(key, JSON.stringify(h));
+localStorage.setItem(key,JSON.stringify(h));
 
 renderHistory();
 renderStats();
@@ -163,164 +126,321 @@ if(currentUser.role==="admin"){
 renderAdminHistory();
 }
 
-addLog(currentUser.user+" generated records");
+logAction(currentUser.user+" generated records");
 }
 
 function renderHistory(){
-let key = "history_"+currentUser.user;
-let h = JSON.parse(localStorage.getItem(key) || "[]");
 
-byId("historyList").innerHTML = "";
+let key="history_"+currentUser.user;
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+byId("historyList").innerHTML="";
 
 h.forEach(item=>{
-let div = document.createElement("div");
-div.className = "history-item";
-div.innerHTML = item.date;
-div.onclick = ()=> byId("output").value = item.data;
+
+let div=document.createElement("div");
+div.className="history-item";
+div.innerHTML=item.date;
+
+div.onclick=()=>{
+byId("output").value=item.data;
+};
+
 byId("historyList").appendChild(div);
+
 });
 }
 
 function renderAdminHistory(){
-const box = byId("historyAdminTable");
+
+let box=byId("historyAdminTable");
 if(!box) return;
 
-box.innerHTML = "";
+box.innerHTML="";
 
-let search = byId("searchHistoryUser").value.toLowerCase().trim();
+let search=byId("searchHistoryUser").value.toLowerCase().trim();
 
 USERS.forEach(u=>{
 
 if(search && !u.user.toLowerCase().includes(search)) return;
 
-let h = JSON.parse(localStorage.getItem("history_"+u.user) || "[]");
+let h=JSON.parse(localStorage.getItem("history_"+u.user)||"[]");
 
 h.forEach(item=>{
-let tr = document.createElement("tr");
-let prev = item.data.substring(0,80).replace(/\n/g," ");
 
-tr.innerHTML = `
+let prev=item.data.substring(0,80).replace(/\n/g," ");
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=`
 <td>${u.user}</td>
 <td>${item.date}</td>
 <td>${prev}...</td>
 `;
 
 box.appendChild(tr);
+
 });
 
 });
 }
 
-/* ---------- USERS ---------- */
+/* USERS TABLE */
+function renderUsers(){
+
+let box=byId("usersTable");
+if(!box) return;
+
+box.innerHTML="";
+
+let search=byId("searchUser").value.toLowerCase().trim();
+
+USERS.forEach(u=>{
+
+if(search && !u.user.toLowerCase().includes(search)) return;
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${u.user}</td>
+<td>${u.role}</td>
+<td>${u.online ? '🟢 Online':'🔴 Offline'}</td>
+<td>${u.lastSeen}</td>
+<td>
+<button onclick="editUser('${u.user}')">Edit</button>
+<button onclick="changeRole('${u.user}')">Role</button>
+<button onclick="resetPass('${u.user}')">Pass</button>
+<button onclick="forceLogout('${u.user}')">Logout</button>
+<button onclick="clearUserHistory('${u.user}')">History</button>
+<button onclick="blockUser('${u.user}')">${u.blocked?'Unblock':'Block'}</button>
+<button class="red" onclick="deleteUser('${u.user}')">Delete</button>
+</td>
+`;
+
+box.appendChild(tr);
+
+});
+
+}
+
+/* ADMIN ACTIONS */
+
 function addUser(){
-let u = byId("newUser").value.trim();
-let p = byId("newPass").value.trim();
-let r = byId("newRole").value;
 
-if(!u || !p) return toast("Fill fields");
+let u=byId("newUser").value.trim();
+let p=byId("newPass").value.trim();
+let r=byId("newRole").value;
 
-if(USERS.find(x=>x.user===u)) return toast("User exists");
+if(!u || !p) return;
+
+if(USERS.find(x=>x.user===u)){
+alert("User exists");
+return;
+}
 
 USERS.push({
 user:u,
 pass:p,
 role:r,
 online:false,
-lastSeen:"-"
+lastSeen:"-",
+blocked:false
 });
 
 saveUsers();
 renderUsers();
 renderStats();
 
-byId("newUser").value = "";
-byId("newPass").value = "";
-
-addLog("admin added user "+u);
+logAction("admin added "+u);
 }
 
 function deleteUser(name){
+
 if(name==="admin") return;
 
-USERS = USERS.filter(x=>x.user!==name);
-saveUsers();
+if(!confirm("Delete "+name+" ?")) return;
 
+USERS=USERS.filter(x=>x.user!==name);
+
+saveUsers();
 renderUsers();
 renderStats();
-renderAdminHistory();
 
-addLog("admin deleted user "+name);
+logAction("admin deleted "+name);
 }
 
-function renderUsers(){
-const box = byId("usersTable");
+function editUser(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+let newName=prompt("New username:",f.user);
+
+if(!newName) return;
+
+f.user=newName;
+
+saveUsers();
+renderUsers();
+
+logAction("admin edited username "+name+" => "+newName);
+}
+
+function resetPass(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+let np=prompt("New password:");
+
+if(!np) return;
+
+f.pass=np;
+
+saveUsers();
+
+logAction("admin changed password for "+name);
+}
+
+function changeRole(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.role=(f.role==="admin")?"member":"admin";
+
+saveUsers();
+renderUsers();
+
+logAction("admin changed role for "+name);
+}
+
+function forceLogout(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.online=false;
+f.lastSeen=now();
+
+saveUsers();
+renderUsers();
+
+logAction("admin forced logout "+name);
+}
+
+function clearUserHistory(name){
+
+if(!confirm("Clear history of "+name+" ?")) return;
+
+localStorage.removeItem("history_"+name);
+
+renderUsers();
+renderAdminHistory();
+renderStats();
+
+logAction("admin cleared history of "+name);
+}
+
+function blockUser(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.blocked=!f.blocked;
+
+saveUsers();
+renderUsers();
+
+logAction("admin toggled block for "+name);
+}
+
+/* LOGS */
+function renderLogs(){
+
+let box=byId("logsBox");
 if(!box) return;
 
-box.innerHTML = "";
+box.innerHTML="";
 
-let search = byId("searchUser").value.toLowerCase().trim();
+let logs=JSON.parse(localStorage.getItem("activityLogs")||"[]");
 
-USERS.forEach(u=>{
+logs.forEach(x=>{
 
-if(search && !u.user.toLowerCase().includes(search)) return;
+let div=document.createElement("div");
+div.className="log-item";
+div.innerHTML=x;
 
-let tr = document.createElement("tr");
+box.appendChild(div);
 
-tr.innerHTML = `
-<td>${u.user}</td>
-<td>${u.role}</td>
-<td class="${u.online?'status-on':'status-off'}">${u.online?'Online':'Offline'}</td>
-<td>${u.lastSeen}</td>
-<td><button class="red" onclick="deleteUser('${u.user}')">Delete</button></td>
-`;
-
-box.appendChild(tr);
 });
 }
 
-/* ---------- OUTPUT ---------- */
-function setOutput(txt){
-byId("output").value = txt.trim();
-saveHistory(txt.trim());
+/* STATS */
+function renderStats(){
+
+let total=USERS.length;
+let online=USERS.filter(x=>x.online).length;
+
+let topUser="-";
+let max=0;
+
+USERS.forEach(u=>{
+let h=JSON.parse(localStorage.getItem("history_"+u.user)||"[]");
+if(h.length>max){
+max=h.length;
+topUser=u.user;
+}
+});
+
+byId("statsGrid").innerHTML=`
+<div class="stat-box"><div>Users</div><div class="num">${total}</div></div>
+<div class="stat-box"><div>Online</div><div class="num">${online}</div></div>
+<div class="stat-box"><div>Top User</div><div class="num">${topUser}</div></div>
+<div class="stat-box"><div>Records</div><div class="num">${max}</div></div>
+`;
 }
 
-function copyOutput(){
-byId("output").select();
-document.execCommand("copy");
-toast("Copied");
-}
-
-/* ---------- EXPORT ---------- */
+/* EXPORT */
 function exportTXT(){
-downloadFile("output.txt", byId("output").value);
+download("output.txt",byId("output").value);
 }
 
 function exportCSV(){
-let rows = byId("output").value.split("\n").join(",");
-downloadFile("output.csv", rows, "text/csv");
+download("output.csv",byId("output").value.replace(/\n/g,","));
 }
 
 function exportJSON(){
-let data = {output: byId("output").value};
-downloadFile("output.json", JSON.stringify(data,null,2), "application/json");
+download("output.json",JSON.stringify({output:byId("output").value},null,2));
 }
 
-/* ---------- GENERATORS ---------- */
-function generateSPF(){
-let d = lines("spfDomains");
-let s = lines("spfSubs");
-let i = lines("spfIps");
+function download(name,data){
 
-let txt = i.map(ip=>"ip4:"+ip).join(" ");
-let out = "";
+let blob=new Blob([data],{type:"text/plain"});
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+a.download=name;
+a.click();
+}
+
+/* GENERATORS */
+function generateSPF(){
+
+let d=lines("spfDomains");
+let s=lines("spfSubs");
+let i=lines("spfIps");
+
+let txt=i.map(ip=>"ip4:"+ip).join(" ");
+let out="";
 
 d.forEach(domain=>{
 if(s.length){
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`;
+out+=`${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`;
 });
 }else{
-out += `${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;
+out+=`${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;
 }
 });
 
@@ -328,19 +448,20 @@ setOutput(out);
 }
 
 function generateMX(){
-let d = lines("mxDomains");
-let s = lines("mxSubs");
-let i = lines("mxIps").join(";");
 
-let out = "";
+let d=lines("mxDomains");
+let s=lines("mxSubs");
+let i=lines("mxIps").join(";");
+
+let out="";
 
 d.forEach(domain=>{
 if(s.length){
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,MXrecords:${i}\n`;
+out+=`${domain},${sub},TXT,MXrecords:${i}\n`;
 });
 }else{
-out += `${domain},${domain},TXT,MXrecords:${i}\n`;
+out+=`${domain},${domain},TXT,MXrecords:${i}\n`;
 }
 });
 
@@ -348,26 +469,26 @@ setOutput(out);
 }
 
 function generateA(){
-let d = lines("aDomains");
-let s = lines("aSubs");
-let i = lines("aIps").join(";");
 
-let out = "";
+let d=lines("aDomains");
+let s=lines("aSubs");
+let i=lines("aIps").join(";");
+
+let out="";
 
 d.forEach(domain=>{
 if(s.length){
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,Arecords:${i}\n`;
+out+=`${domain},${sub},TXT,Arecords:${i}\n`;
 });
 }else{
-out += `${domain},${domain},TXT,Arecords:${i}\n`;
+out+=`${domain},${domain},TXT,Arecords:${i}\n`;
 }
 });
 
 setOutput(out);
 }
 
-/* ---------- THEME ---------- */
 function toggleTheme(){
 document.body.classList.toggle("light");
 }
