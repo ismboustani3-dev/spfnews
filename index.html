@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WMN3 DNS PRO</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif;}
+
+:root{
+--bg:#0f172a;
+--card:#111827;
+--text:#ffffff;
+--muted:#94a3b8;
+--input:#020617;
+--border:#1f2937;
+}
+
+body.light{
+--bg:#f8fafc;
+--card:#ffffff;
+--text:#111827;
+--muted:#64748b;
+--input:#f8fafc;
+--border:#e5e7eb;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+transition:.3s;
+overflow-x:hidden;
+}
+
+/* LOGIN */
+.login-page{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.login-box{
+width:100%;
+max-width:430px;
+background:var(--card);
+padding:35px;
+border-radius:22px;
+border:1px solid var(--border);
+box-shadow:0 20px 45px rgba(0,0,0,.35);
+}
+
+.login-box h1{
+font-size:30px;
+text-align:center;
+margin-bottom:8px;
+}
+
+.login-box p{
+text-align:center;
+color:var(--muted);
+margin-bottom:22px;
+}
+
+label{
+display:block;
+margin-top:14px;
+margin-bottom:7px;
+font-weight:700;
+color:var(--muted);
+}
+
+input,textarea{
+width:100%;
+padding:13px;
+border-radius:14px;
+border:1px solid var(--border);
+background:var(--input);
+color:var(--text);
+outline:none;
+}
+
+textarea{
+height:92px;
+resize:vertical;
+}
+
+button{
+border:none;
+border-radius:14px;
+font-weight:800;
+cursor:pointer;
+color:#fff;
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.login-btn,.action{
+width:100%;
+margin-top:16px;
+padding:13px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.error{
+margin-top:14px;
+color:#ef4444;
+text-align:center;
+display:none;
+}
+
+/* DASHBOARD */
+#dashboard{display:none;}
+
+.topbar{
+padding:22px 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+}
+
+/* BRAND */
+.brand{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.wmn3-logo{
+display:grid;
+grid-template-columns:repeat(2,28px);
+grid-template-rows:repeat(2,28px);
+gap:6px;
+}
+
+.wmn3-logo span{
+width:28px;
+height:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:10px;
+font-size:14px;
+font-weight:900;
+color:#fff;
+background:linear-gradient(135deg,#06b6d4,#2563eb);
+box-shadow:0 10px 22px rgba(0,0,0,.20);
+transition:.25s;
+}
+
+.wmn3-logo span:nth-child(2){background:linear-gradient(135deg,#8b5cf6,#2563eb);}
+.wmn3-logo span:nth-child(3){background:linear-gradient(135deg,#10b981,#059669);}
+.wmn3-logo span:nth-child(4){background:linear-gradient(135deg,#f59e0b,#ef4444);}
+
+.wmn3-logo:hover span{
+transform:translateY(-4px) scale(1.08);
+}
+
+.brand-text h1{
+font-size:26px;
+line-height:1;
+color:#fff;
+}
+
+.brand-text p{
+font-size:13px;
+margin-top:4px;
+opacity:.9;
+color:#fff;
+}
+
+.top-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.top-actions button{
+padding:10px 16px;
+}
+
+.theme{background:#0ea5e9;}
+.logout{background:#ef4444;}
+
+.wrapper{
+padding:28px;
+max-width:1500px;
+margin:auto;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+gap:22px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:22px;
+padding:24px;
+}
+
+.card h2{
+margin-bottom:16px;
+font-size:24px;
+}
+
+.output,.history{
+margin-top:25px;
+background:var(--card);
+border:1px solid var(--border);
+border-radius:22px;
+padding:24px;
+}
+
+#output{height:220px;}
+
+.row{
+display:flex;
+gap:14px;
+margin-top:16px;
+flex-wrap:wrap;
+}
+
+.row button{
+flex:1;
+padding:12px;
+}
+
+.copy{background:#10b981;}
+.clear{background:#ef4444;}
+
+.history ul{
+list-style:none;
+margin-top:14px;
+max-height:220px;
+overflow:auto;
+}
+
+.history li{
+padding:10px;
+border-bottom:1px solid var(--border);
+cursor:pointer;
+font-size:14px;
+}
+
+.toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#10b981;
+padding:12px 18px;
+border-radius:12px;
+font-weight:800;
+display:none;
+z-index:999;
+}
+
+@media(max-width:768px){
+.wrapper{padding:18px;}
+
+.brand-text h1{font-size:20px;}
+.brand-text p{font-size:11px;}
+
+.wmn3-logo{
+grid-template-columns:repeat(2,24px);
+grid-template-rows:repeat(2,24px);
+gap:5px;
+}
+
+.wmn3-logo span{
+width:24px;
+height:24px;
+font-size:12px;
+}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">Copied Successfully</div>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+<div class="login-box">
+<h1>🔒 Secure Access</h1>
+<p>Login to continue</p>
+
+<label>Username</label>
+<input type="text" id="username">
+
+<label>Password</label>
+<input type="password" id="password">
+
+<button class="login-btn" onclick="login()">Login</button>
+<div class="error" id="error">Invalid Username or Password</div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+<div class="topbar">
+
+<div class="brand">
+
+<div class="wmn3-logo">
+<span>W</span>
+<span>M</span>
+<span>N</span>
+<span>3</span>
+</div>
+
+<div class="brand-text">
+<h1>WMN3 DNS PRO</h1>
+<p>IB Generator Tool</p>
+</div>
+
+</div>
+
+<div class="top-actions">
+<button class="theme" onclick="toggleTheme()">🌙 Theme</button>
+<button class="logout" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+<div class="wrapper">
+
+<div class="grid">
+
+<div class="card">
+<h2>SPF Records</h2>
+<label>Domains</label>
+<textarea id="spfDomains"></textarea>
+<label>Subdomains</label>
+<textarea id="spfSubs"></textarea>
+<label>IPs</label>
+<textarea id="spfIps"></textarea>
+<button class="action" onclick="generateSPF()">Generate SPF</button>
+</div>
+
+<div class="card">
+<h2>MX Records</h2>
+<label>Domains</label>
+<textarea id="mxDomains"></textarea>
+<label>Subdomains</label>
+<textarea id="mxSubs"></textarea>
+<label>IPs</label>
+<textarea id="mxIps"></textarea>
+<button class="action" onclick="generateMX()">Generate MX</button>
+</div>
+
+<div class="card">
+<h2>A Records</h2>
+<label>Domains</label>
+<textarea id="aDomains"></textarea>
+<label>Subdomains</label>
+<textarea id="aSubs"></textarea>
+<label>IPs</label>
+<textarea id="aIps"></textarea>
+<button class="action" onclick="generateA()">Generate A</button>
+</div>
+
+</div>
+
+<div class="output">
+<h2 style="margin-bottom:14px;">Output Console</h2>
+<textarea id="output" readonly></textarea>
+
+<div class="row">
+<button class="copy" onclick="copyOutput()">Copy Output</button>
+<button class="clear" onclick="clearAll()">Clear All</button>
+</div>
+</div>
+
+<div class="history">
+<h2>History</h2>
+<ul id="historyList"></ul>
+</div>
+
+</div>
+</div>
+
+<script>
+const USERNAME="admin";
+const PASSWORD="123456";
+
+dashboard.style.display="none";
+loginPage.style.display="flex";
+
+function login(){
+if(username.value.trim()===USERNAME && password.value.trim()===PASSWORD){
+loginPage.style.display="none";
+dashboard.style.display="block";
+renderHistory();
+}else{
+error.style.display="block";
+}
+}
+
+function logout(){location.reload();}
+
+document.addEventListener("keydown",e=>{
+if(e.key==="Enter" && loginPage.style.display!=="none"){login();}
+});
+
+if(localStorage.theme==="light"){document.body.classList.add("light");}
+
+function toggleTheme(){
+document.body.classList.toggle("light");
+localStorage.theme=document.body.classList.contains("light")?"light":"dark";
+}
+
+function lines(id){
+return document.getElementById(id).value.split('\n').map(x=>x.trim()).filter(x=>x);
+}
+
+function setOutput(text){
+output.value=text.trim();
+saveHistory(text.trim());
+}
+
+function showToast(msg="Copied Successfully"){
+toast.innerText=msg;
+toast.style.display="block";
+setTimeout(()=>toast.style.display="none",1800);
+}
+
+function saveHistory(result){
+if(!result)return;
+let h=JSON.parse(localStorage.getItem("dnsHistory")||"[]");
+h.unshift({date:new Date().toLocaleString(),data:result});
+h=h.slice(0,20);
+localStorage.setItem("dnsHistory",JSON.stringify(h));
+renderHistory();
+}
+
+function renderHistory(){
+historyList.innerHTML="";
+let h=JSON.parse(localStorage.getItem("dnsHistory")||"[]");
+h.forEach(item=>{
+let li=document.createElement("li");
+li.innerHTML=item.date;
+li.onclick=()=>output.value=item.data;
+historyList.appendChild(li);
+});
+}
+
+function generateSPF(){
+let d=lines("spfDomains"),s=lines("spfSubs"),i=lines("spfIps");
+let txt=i.map(ip=>"ip4:"+ip).join(" ");
+let out="";
+d.forEach(domain=>{
+if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`);}
+else{out+=`${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;}
+});
+setOutput(out);
+}
+
+function generateMX(){
+let d=lines("mxDomains"),s=lines("mxSubs"),i=lines("mxIps").join(";");
+let out="";
+d.forEach(domain=>{
+if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,MXrecords:${i}\n`);}
+else{out+=`${domain},${domain},TXT,MXrecords:${i}\n`;}
+});
+setOutput(out);
+}
+
+function generateA(){
+let d=lines("aDomains"),s=lines("aSubs"),i=lines("aIps").join(";");
+let out="";
+d.forEach(domain=>{
+if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,Arecords:${i}\n`);}
+else{out+=`${domain},${domain},TXT,Arecords:${i}\n`;}
+});
+setOutput(out);
+}
+
+function copyOutput(){
+output.select();
+document.execCommand("copy");
+showToast();
+}
+
+function clearAll(){
+document.querySelectorAll("textarea").forEach(t=>t.value="");
+}
+</script>
+
+</body>
+</html>
