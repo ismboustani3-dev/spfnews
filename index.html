@@ -1,12 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>WMN3 DNS PRO - PRO VERSION</title>
+<title>WMN3 DNS PRO - ADMIN HISTORY</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 
 body{
 background:#0f172a;
@@ -37,7 +38,7 @@ max-width:420px;
 input,textarea,select{
 width:100%;
 padding:12px;
-margin-top:8px;
+margin-top:10px;
 border:none;
 outline:none;
 border-radius:12px;
@@ -46,7 +47,7 @@ color:#fff;
 }
 
 textarea{
-height:90px;
+height:100px;
 resize:vertical;
 }
 
@@ -60,10 +61,10 @@ color:#fff;
 margin-top:12px;
 }
 
-.blue{background:#2563eb;}
-.red{background:#ef4444;}
-.green{background:#10b981;}
-.gold{background:#d97706;}
+.blue{background:#2563eb}
+.red{background:#ef4444}
+.green{background:#10b981}
+.gold{background:#d97706}
 
 .error{
 color:#ef4444;
@@ -72,11 +73,11 @@ display:none;
 text-align:center;
 }
 
-#dashboard{display:none;}
+#dashboard{display:none}
 
 .topbar{
-background:linear-gradient(135deg,#111827,#1e293b);
 padding:18px 28px;
+background:#111827;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -111,10 +112,11 @@ padding:10px;
 border-bottom:1px solid #1f2937;
 text-align:left;
 font-size:14px;
+vertical-align:top;
 }
 
-.status-on{color:#10b981;font-weight:bold;}
-.status-off{color:#ef4444;font-weight:bold;}
+.status-on{color:#10b981;font-weight:bold}
+.status-off{color:#ef4444;font-weight:bold}
 
 .history-item{
 padding:10px;
@@ -133,12 +135,12 @@ background:#1e293b;
 <div class="login-page" id="loginPage">
 <div class="login-box">
 
-<h1 style="text-align:center;">🔒 WMN3 PRO ACCESS</h1>
+<h1 style="text-align:center">🔒 WMN3 PRO ACCESS</h1>
 
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
 
-<button class="blue" style="width:100%;" onclick="login()">Login</button>
+<button class="blue" style="width:100%" onclick="login()">Login</button>
 
 <div class="error" id="error">Invalid Login</div>
 
@@ -186,7 +188,7 @@ background:#1e293b;
 
 <div class="panel">
 <h3>Output</h3>
-<textarea id="output" style="height:220px;"></textarea>
+<textarea id="output" style="height:220px"></textarea>
 <button class="green" onclick="copyOutput()">Copy</button>
 </div>
 
@@ -196,11 +198,11 @@ background:#1e293b;
 </div>
 
 <!-- ADMIN PANEL -->
-<div class="panel" id="adminPanel" style="display:none;">
+<div class="panel" id="adminPanel" style="display:none">
 
-<h2 style="color:#fbbf24;">👑 Admin Panel</h2>
+<h2 style="color:#fbbf24">👑 Admin Panel</h2>
 
-<h3 style="margin-top:15px;">Add User</h3>
+<h3 style="margin-top:15px">Add User</h3>
 
 <input type="text" id="newUser" placeholder="Username">
 <input type="password" id="newPass" placeholder="Password">
@@ -212,7 +214,7 @@ background:#1e293b;
 
 <button class="gold" onclick="addUser()">Add User</button>
 
-<h3 style="margin-top:25px;">Users List</h3>
+<h3 style="margin-top:25px">Users List</h3>
 
 <table>
 <thead>
@@ -225,6 +227,19 @@ background:#1e293b;
 </tr>
 </thead>
 <tbody id="usersTable"></tbody>
+</table>
+
+<h3 style="margin-top:35px">📜 Users History</h3>
+
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Date</th>
+<th>Preview</th>
+</tr>
+</thead>
+<tbody id="historyAdminTable"></tbody>
 </table>
 
 </div>
@@ -257,6 +272,7 @@ if(found){
 currentUser=found;
 found.online=true;
 found.lastSeen=new Date().toLocaleString();
+
 saveUsers();
 
 loginPage.style.display="none";
@@ -280,12 +296,15 @@ error.style.display="block";
 function logout(){
 
 if(currentUser){
+
 let f=USERS.find(x=>x.user===currentUser.user);
+
 if(f){
 f.online=false;
 f.lastSeen=new Date().toLocaleString();
 saveUsers();
 }
+
 }
 
 location.reload();
@@ -319,6 +338,10 @@ h=h.slice(0,30);
 localStorage.setItem(key,JSON.stringify(h));
 
 renderHistory();
+
+if(currentUser.role==="admin"){
+renderAdminHistory();
+}
 }
 
 function renderHistory(){
@@ -332,9 +355,7 @@ historyList.innerHTML="";
 h.forEach(item=>{
 
 let div=document.createElement("div");
-
 div.className="history-item";
-
 div.innerHTML=item.date;
 
 div.onclick=()=>{
@@ -344,7 +365,6 @@ output.value=item.data;
 historyList.appendChild(div);
 
 });
-
 }
 
 function generateSPF(){
@@ -456,8 +476,40 @@ usersTable.appendChild(tr);
 
 });
 
+renderAdminHistory();
+}
+
+function renderAdminHistory(){
+
+historyAdminTable.innerHTML="";
+
+USERS.forEach(u=>{
+
+let key="history_"+u.user;
+
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+h.forEach(item=>{
+
+let tr=document.createElement("tr");
+
+let preview=item.data.substring(0,80).replace(/\n/g," ");
+
+tr.innerHTML=`
+<td>${u.user}</td>
+<td>${item.date}</td>
+<td>${preview}...</td>
+`;
+
+historyAdminTable.appendChild(tr);
+
+});
+
+});
+
 }
 </script>
 
 </body>
 </html>
+```
