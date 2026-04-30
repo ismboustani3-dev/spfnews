@@ -6,7 +6,12 @@
 <title>WMN3 DNS PRO</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,Arial,sans-serif;
+}
 
 :root{
 --bg:#0f172a;
@@ -116,7 +121,9 @@ display:none;
 }
 
 /* DASHBOARD */
-#dashboard{display:none;}
+#dashboard{
+display:none;
+}
 
 .topbar{
 padding:22px 30px;
@@ -128,7 +135,6 @@ gap:15px;
 background:linear-gradient(135deg,#2563eb,#4f46e5);
 }
 
-/* BRAND */
 .brand{
 display:flex;
 align-items:center;
@@ -153,16 +159,18 @@ font-size:14px;
 font-weight:900;
 color:#fff;
 background:linear-gradient(135deg,#06b6d4,#2563eb);
-box-shadow:0 10px 22px rgba(0,0,0,.20);
-transition:.25s;
 }
 
-.wmn3-logo span:nth-child(2){background:linear-gradient(135deg,#8b5cf6,#2563eb);}
-.wmn3-logo span:nth-child(3){background:linear-gradient(135deg,#10b981,#059669);}
-.wmn3-logo span:nth-child(4){background:linear-gradient(135deg,#f59e0b,#ef4444);}
+.wmn3-logo span:nth-child(2){
+background:linear-gradient(135deg,#8b5cf6,#2563eb);
+}
 
-.wmn3-logo:hover span{
-transform:translateY(-4px) scale(1.08);
+.wmn3-logo span:nth-child(3){
+background:linear-gradient(135deg,#10b981,#059669);
+}
+
+.wmn3-logo span:nth-child(4){
+background:linear-gradient(135deg,#f59e0b,#ef4444);
 }
 
 .brand-text h1{
@@ -181,15 +189,19 @@ color:#fff;
 .top-actions{
 display:flex;
 gap:10px;
-flex-wrap:wrap;
 }
 
 .top-actions button{
 padding:10px 16px;
 }
 
-.theme{background:#0ea5e9;}
-.logout{background:#ef4444;}
+.theme{
+background:#0ea5e9;
+}
+
+.logout{
+background:#ef4444;
+}
 
 .wrapper{
 padding:28px;
@@ -223,7 +235,9 @@ border-radius:22px;
 padding:24px;
 }
 
-#output{height:220px;}
+#output{
+height:220px;
+}
 
 .row{
 display:flex;
@@ -237,21 +251,31 @@ flex:1;
 padding:12px;
 }
 
-.copy{background:#10b981;}
-.clear{background:#ef4444;}
+.copy{
+background:#10b981;
+}
+
+.clear{
+background:#ef4444;
+}
 
 .history ul{
 list-style:none;
 margin-top:14px;
-max-height:220px;
+max-height:260px;
 overflow:auto;
 }
 
 .history li{
-padding:10px;
+padding:12px;
 border-bottom:1px solid var(--border);
 cursor:pointer;
 font-size:14px;
+line-height:1.5;
+}
+
+.history li:hover{
+background:rgba(59,130,246,.08);
 }
 
 .toast{
@@ -267,10 +291,18 @@ z-index:999;
 }
 
 @media(max-width:768px){
-.wrapper{padding:18px;}
 
-.brand-text h1{font-size:20px;}
-.brand-text p{font-size:11px;}
+.wrapper{
+padding:18px;
+}
+
+.brand-text h1{
+font-size:20px;
+}
+
+.brand-text p{
+font-size:11px;
+}
 
 .wmn3-logo{
 grid-template-columns:repeat(2,24px);
@@ -283,6 +315,7 @@ width:24px;
 height:24px;
 font-size:12px;
 }
+
 }
 </style>
 </head>
@@ -292,7 +325,9 @@ font-size:12px;
 
 <!-- LOGIN -->
 <div class="login-page" id="loginPage">
+
 <div class="login-box">
+
 <h1>🔒 Secure Access</h1>
 <p>Login to continue</p>
 
@@ -303,7 +338,9 @@ font-size:12px;
 <input type="password" id="password">
 
 <button class="login-btn" onclick="login()">Login</button>
+
 <div class="error" id="error">Invalid Username or Password</div>
+
 </div>
 </div>
 
@@ -375,18 +412,24 @@ font-size:12px;
 </div>
 
 <div class="output">
+
 <h2 style="margin-bottom:14px;">Output Console</h2>
+
 <textarea id="output" readonly></textarea>
 
 <div class="row">
 <button class="copy" onclick="copyOutput()">Copy Output</button>
 <button class="clear" onclick="clearAll()">Clear All</button>
 </div>
+
 </div>
 
 <div class="history">
+
 <h2>History</h2>
+
 <ul id="historyList"></ul>
+
 </div>
 
 </div>
@@ -396,34 +439,57 @@ font-size:12px;
 const USERNAME="admin";
 const PASSWORD="123456";
 
+let currentUser="";
+
 dashboard.style.display="none";
 loginPage.style.display="flex";
 
 function login(){
-if(username.value.trim()===USERNAME && password.value.trim()===PASSWORD){
+
+if(username.value.trim()===USERNAME &&
+password.value.trim()===PASSWORD){
+
+currentUser=username.value.trim();
+
 loginPage.style.display="none";
 dashboard.style.display="block";
+
 renderHistory();
+
 }else{
+
 error.style.display="block";
-}
+
 }
 
-function logout(){location.reload();}
+}
+
+function logout(){
+location.reload();
+}
 
 document.addEventListener("keydown",e=>{
-if(e.key==="Enter" && loginPage.style.display!=="none"){login();}
+if(e.key==="Enter" && loginPage.style.display!=="none"){
+login();
+}
 });
 
-if(localStorage.theme==="light"){document.body.classList.add("light");}
+if(localStorage.theme==="light"){
+document.body.classList.add("light");
+}
 
 function toggleTheme(){
 document.body.classList.toggle("light");
-localStorage.theme=document.body.classList.contains("light")?"light":"dark";
+localStorage.theme=
+document.body.classList.contains("light")
+?"light":"dark";
 }
 
 function lines(id){
-return document.getElementById(id).value.split('\n').map(x=>x.trim()).filter(x=>x);
+return document.getElementById(id).value
+.split('\n')
+.map(x=>x.trim())
+.filter(x=>x);
 }
 
 function setOutput(text){
@@ -434,58 +500,140 @@ saveHistory(text.trim());
 function showToast(msg="Copied Successfully"){
 toast.innerText=msg;
 toast.style.display="block";
-setTimeout(()=>toast.style.display="none",1800);
+setTimeout(()=>{
+toast.style.display="none";
+},1800);
 }
 
+/* HISTORY USER + DATE */
 function saveHistory(result){
+
 if(!result)return;
+
 let h=JSON.parse(localStorage.getItem("dnsHistory")||"[]");
-h.unshift({date:new Date().toLocaleString(),data:result});
-h=h.slice(0,20);
+
+h.unshift({
+user:currentUser,
+date:new Date().toLocaleString(),
+data:result
+});
+
+h=h.slice(0,50);
+
 localStorage.setItem("dnsHistory",JSON.stringify(h));
+
 renderHistory();
+
 }
 
 function renderHistory(){
+
 historyList.innerHTML="";
+
 let h=JSON.parse(localStorage.getItem("dnsHistory")||"[]");
+
 h.forEach(item=>{
+
 let li=document.createElement("li");
-li.innerHTML=item.date;
-li.onclick=()=>output.value=item.data;
+
+li.innerHTML=
+"<b>"+item.user+"</b><br><small>"+item.date+"</small>";
+
+li.onclick=()=>{
+output.value=item.data;
+};
+
 historyList.appendChild(li);
+
 });
+
 }
 
+/* GENERATORS */
 function generateSPF(){
-let d=lines("spfDomains"),s=lines("spfSubs"),i=lines("spfIps");
+
+let d=lines("spfDomains"),
+s=lines("spfSubs"),
+i=lines("spfIps");
+
 let txt=i.map(ip=>"ip4:"+ip).join(" ");
+
 let out="";
+
 d.forEach(domain=>{
-if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`);}
-else{out+=`${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;}
+
+if(s.length){
+
+s.forEach(sub=>{
+out+=domain+","+sub+',TXT,"v=spf1 '+txt+' -all"\n';
 });
+
+}else{
+
+out+=domain+","+domain+',TXT,"v=spf1 '+txt+' -all"\n';
+
+}
+
+});
+
 setOutput(out);
+
 }
 
 function generateMX(){
-let d=lines("mxDomains"),s=lines("mxSubs"),i=lines("mxIps").join(";");
+
+let d=lines("mxDomains"),
+s=lines("mxSubs"),
+i=lines("mxIps").join(";");
+
 let out="";
+
 d.forEach(domain=>{
-if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,MXrecords:${i}\n`);}
-else{out+=`${domain},${domain},TXT,MXrecords:${i}\n`;}
+
+if(s.length){
+
+s.forEach(sub=>{
+out+=domain+","+sub+",TXT,MXrecords:"+i+"\n";
 });
+
+}else{
+
+out+=domain+","+domain+",TXT,MXrecords:"+i+"\n";
+
+}
+
+});
+
 setOutput(out);
+
 }
 
 function generateA(){
-let d=lines("aDomains"),s=lines("aSubs"),i=lines("aIps").join(";");
+
+let d=lines("aDomains"),
+s=lines("aSubs"),
+i=lines("aIps").join(";");
+
 let out="";
+
 d.forEach(domain=>{
-if(s.length){s.forEach(sub=>out+=`${domain},${sub},TXT,Arecords:${i}\n`);}
-else{out+=`${domain},${domain},TXT,Arecords:${i}\n`;}
+
+if(s.length){
+
+s.forEach(sub=>{
+out+=domain+","+sub+",TXT,Arecords:"+i+"\n";
 });
+
+}else{
+
+out+=domain+","+domain+",TXT,Arecords:"+i+"\n";
+
+}
+
+});
+
 setOutput(out);
+
 }
 
 function copyOutput(){
