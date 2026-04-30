@@ -1,515 +1,243 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>WMN3 DNS PRO - ADMIN HISTORY</title>
+<title>WMN3 DNS PRO</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-
-body{
-background:#0f172a;
-color:#fff;
-min-height:100vh;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
-.login-page{
+body{
+background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-min-height:100vh;
 padding:20px;
 }
 
-.login-box,.card,.panel{
-background:#111827;
-padding:25px;
-border-radius:18px;
-border:1px solid #1f2937;
-}
-
+/* LOGIN BOX */
 .login-box{
 width:100%;
-max-width:420px;
+max-width:430px;
+background:#ffffff;
+padding:42px 34px;
+border-radius:28px;
+box-shadow:0 25px 70px rgba(0,0,0,.30);
+text-align:center;
+animation:fadeUp .7s ease;
 }
 
-input,textarea,select{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-outline:none;
-border-radius:12px;
-background:#020617;
+.logo-icon{
+width:74px;
+height:74px;
+margin:auto;
+border-radius:22px;
+background:linear-gradient(135deg,#2563eb,#10b981);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:34px;
 color:#fff;
+font-weight:900;
+box-shadow:0 15px 30px rgba(37,99,235,.25);
 }
 
-textarea{
-height:100px;
-resize:vertical;
+.login-box h1{
+margin-top:20px;
+font-size:38px;
+font-weight:900;
+color:#2563eb;
+}
+
+.login-box p{
+margin-top:10px;
+color:#64748b;
+font-size:18px;
+line-height:1.5;
+margin-bottom:26px;
+}
+
+label{
+display:block;
+text-align:left;
+margin-top:14px;
+margin-bottom:8px;
+font-weight:800;
+color:#111827;
+font-size:14px;
+}
+
+input{
+width:100%;
+padding:16px;
+border-radius:16px;
+border:2px solid #e5e7eb;
+font-size:16px;
+background:#fff;
+color:#111827;
+outline:none;
+transition:.2s;
+}
+
+input:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 4px rgba(37,99,235,.10);
 }
 
 button{
+width:100%;
+padding:17px;
+margin-top:24px;
 border:none;
-padding:12px;
-border-radius:12px;
+border-radius:16px;
+font-size:24px;
+font-weight:900;
 cursor:pointer;
-font-weight:800;
 color:#fff;
-margin-top:12px;
+background:linear-gradient(135deg,#3b82f6,#10b981);
+box-shadow:0 12px 25px rgba(59,130,246,.22);
+transition:.2s;
 }
 
-.blue{background:#2563eb}
-.red{background:#ef4444}
-.green{background:#10b981}
-.gold{background:#d97706}
+button:hover{
+transform:translateY(-2px);
+}
 
 .error{
+margin-top:14px;
 color:#ef4444;
-margin-top:10px;
+font-weight:700;
 display:none;
-text-align:center;
 }
 
-#dashboard{display:none}
-
-.topbar{
-padding:18px 28px;
-background:#111827;
-display:flex;
-justify-content:space-between;
-align-items:center;
-flex-wrap:wrap;
-gap:15px;
-}
-
-.wrapper{
-padding:25px;
-max-width:1500px;
-margin:auto;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
-}
-
-.panel{
-margin-top:25px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #1f2937;
-text-align:left;
+.footer{
+margin-top:28px;
 font-size:14px;
-vertical-align:top;
+color:#64748b;
 }
 
-.status-on{color:#10b981;font-weight:bold}
-.status-off{color:#ef4444;font-weight:bold}
-
-.history-item{
-padding:10px;
-border-bottom:1px solid #1f2937;
-cursor:pointer;
+.success-page{
+display:none;
+width:100%;
+max-width:800px;
+background:#111827;
+color:#fff;
+padding:40px;
+border-radius:25px;
+text-align:center;
+box-shadow:0 25px 70px rgba(0,0,0,.35);
 }
 
-.history-item:hover{
-background:#1e293b;
+.success-page h2{
+font-size:42px;
+margin-bottom:12px;
+color:#10b981;
+}
+
+.success-page p{
+font-size:20px;
+color:#cbd5e1;
+}
+
+.logout{
+margin-top:25px;
+max-width:250px;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(35px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div class="login-page" id="loginPage">
-<div class="login-box">
+<div class="login-box" id="loginBox">
 
-<h1 style="text-align:center">🔒 WMN3 PRO ACCESS</h1>
+<div class="logo-icon">W</div>
 
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
+<h1>WMN3 DNS PRO</h1>
 
-<button class="blue" style="width:100%" onclick="login()">Login</button>
+<p>Enter your credentials to access the dashboard</p>
 
-<div class="error" id="error">Invalid Login</div>
+<label>Username</label>
+<input type="text" id="username" placeholder="Enter username">
 
+<label>Password</label>
+<input type="password" id="password" placeholder="Enter password">
+
+<button onclick="login()">Sign In</button>
+
+<div class="error" id="error">Invalid Username or Password</div>
+
+<div class="footer">
+© 2026 WMN3 DNS Professional Suite
 </div>
+
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard">
+<div class="success-page" id="dashboard">
 
-<div class="topbar">
-<div>
-<h2>WMN3 DNS PRO</h2>
-<div id="welcome"></div>
-</div>
+<h2>✅ Welcome</h2>
+<p id="welcomeText"></p>
 
-<button class="red" onclick="logout()">Logout</button>
-</div>
+<button class="logout" onclick="logout()">Logout</button>
 
-<div class="wrapper">
-
-<div class="grid">
-
-<div class="card">
-<h3>SPF Generator</h3>
-<textarea id="spfDomains" placeholder="Domains"></textarea>
-<textarea id="spfIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateSPF()">Generate</button>
-</div>
-
-<div class="card">
-<h3>MX Generator</h3>
-<textarea id="mxDomains" placeholder="Domains"></textarea>
-<textarea id="mxIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateMX()">Generate</button>
-</div>
-
-<div class="card">
-<h3>A Generator</h3>
-<textarea id="aDomains" placeholder="Domains"></textarea>
-<textarea id="aIps" placeholder="IPs"></textarea>
-<button class="blue" onclick="generateA()">Generate</button>
-</div>
-
-</div>
-
-<div class="panel">
-<h3>Output</h3>
-<textarea id="output" style="height:220px"></textarea>
-<button class="green" onclick="copyOutput()">Copy</button>
-</div>
-
-<div class="panel">
-<h3>My History</h3>
-<div id="historyList"></div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="panel" id="adminPanel" style="display:none">
-
-<h2 style="color:#fbbf24">👑 Admin Panel</h2>
-
-<h3 style="margin-top:15px">Add User</h3>
-
-<input type="text" id="newUser" placeholder="Username">
-<input type="password" id="newPass" placeholder="Password">
-
-<select id="newRole">
-<option value="member">member</option>
-<option value="admin">admin</option>
-</select>
-
-<button class="gold" onclick="addUser()">Add User</button>
-
-<h3 style="margin-top:25px">Users List</h3>
-
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Role</th>
-<th>Status</th>
-<th>Last Seen</th>
-<th>Delete</th>
-</tr>
-</thead>
-<tbody id="usersTable"></tbody>
-</table>
-
-<h3 style="margin-top:35px">📜 Users History</h3>
-
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Date</th>
-<th>Preview</th>
-</tr>
-</thead>
-<tbody id="historyAdminTable"></tbody>
-</table>
-
-</div>
-
-</div>
 </div>
 
 <script>
-let USERS = JSON.parse(localStorage.getItem("usersDB")) || [
-{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-"},
-{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-"},
-{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-"}
+const USERS = [
+{user:"admin",pass:"123456"},
+{user:"user1",pass:"111111"},
+{user:"user2",pass:"222222"}
 ];
-
-let currentUser=null;
-
-function saveUsers(){
-localStorage.setItem("usersDB",JSON.stringify(USERS));
-}
 
 function login(){
 
-let u=username.value.trim();
-let p=password.value.trim();
+let u=document.getElementById("username").value.trim();
+let p=document.getElementById("password").value.trim();
 
 let found=USERS.find(x=>x.user===u && x.pass===p);
 
 if(found){
 
-currentUser=found;
-found.online=true;
-found.lastSeen=new Date().toLocaleString();
+document.getElementById("loginBox").style.display="none";
+document.getElementById("dashboard").style.display="block";
 
-saveUsers();
-
-loginPage.style.display="none";
-dashboard.style.display="block";
-
-welcome.innerHTML="👤 "+found.user+" ("+found.role+")";
-
-renderHistory();
-
-if(found.role==="admin"){
-adminPanel.style.display="block";
-renderUsers();
-}
+document.getElementById("welcomeText").innerHTML=
+"Hello <b>"+found.user+"</b>, access granted.";
 
 }else{
-error.style.display="block";
+document.getElementById("error").style.display="block";
 }
 
 }
 
 function logout(){
-
-if(currentUser){
-
-let f=USERS.find(x=>x.user===currentUser.user);
-
-if(f){
-f.online=false;
-f.lastSeen=new Date().toLocaleString();
-saveUsers();
-}
-
-}
-
 location.reload();
 }
 
-function lines(id){
-return document.getElementById(id).value
-.split('\n')
-.map(x=>x.trim())
-.filter(x=>x);
+document.addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+login();
 }
-
-function setOutput(text){
-output.value=text.trim();
-saveHistory(text.trim());
-}
-
-function saveHistory(result){
-
-let key="history_"+currentUser.user;
-
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-h.unshift({
-date:new Date().toLocaleString(),
-data:result
 });
-
-h=h.slice(0,30);
-
-localStorage.setItem(key,JSON.stringify(h));
-
-renderHistory();
-
-if(currentUser.role==="admin"){
-renderAdminHistory();
-}
-}
-
-function renderHistory(){
-
-let key="history_"+currentUser.user;
-
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-historyList.innerHTML="";
-
-h.forEach(item=>{
-
-let div=document.createElement("div");
-div.className="history-item";
-div.innerHTML=item.date;
-
-div.onclick=()=>{
-output.value=item.data;
-};
-
-historyList.appendChild(div);
-
-});
-}
-
-function generateSPF(){
-
-let d=lines("spfDomains");
-let i=lines("spfIps");
-
-let txt=i.map(ip=>"ip4:"+ip).join(" ");
-
-let out="";
-
-d.forEach(domain=>{
-out+=domain+","+domain+',TXT,"v=spf1 '+txt+' -all"\n';
-});
-
-setOutput(out);
-}
-
-function generateMX(){
-
-let d=lines("mxDomains");
-let i=lines("mxIps").join(";");
-
-let out="";
-
-d.forEach(domain=>{
-out+=domain+","+domain+",TXT,MXrecords:"+i+"\n";
-});
-
-setOutput(out);
-}
-
-function generateA(){
-
-let d=lines("aDomains");
-let i=lines("aIps").join(";");
-
-let out="";
-
-d.forEach(domain=>{
-out+=domain+","+domain+",TXT,Arecords:"+i+"\n";
-});
-
-setOutput(out);
-}
-
-function copyOutput(){
-output.select();
-document.execCommand("copy");
-}
-
-function addUser(){
-
-let u=newUser.value.trim();
-let p=newPass.value.trim();
-let r=newRole.value;
-
-if(!u || !p)return;
-
-if(USERS.find(x=>x.user===u)){
-alert("User exists");
-return;
-}
-
-USERS.push({
-user:u,
-pass:p,
-role:r,
-online:false,
-lastSeen:"-"
-});
-
-saveUsers();
-renderUsers();
-
-newUser.value="";
-newPass.value="";
-}
-
-function deleteUser(name){
-
-if(name==="admin") return;
-
-USERS=USERS.filter(x=>x.user!==name);
-
-saveUsers();
-renderUsers();
-}
-
-function renderUsers(){
-
-usersTable.innerHTML="";
-
-USERS.forEach(u=>{
-
-let tr=document.createElement("tr");
-
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${u.role}</td>
-<td class="${u.online?'status-on':'status-off'}">
-${u.online?'Online':'Offline'}
-</td>
-<td>${u.lastSeen}</td>
-<td><button class="red" onclick="deleteUser('${u.user}')">Delete</button></td>
-`;
-
-usersTable.appendChild(tr);
-
-});
-
-renderAdminHistory();
-}
-
-function renderAdminHistory(){
-
-historyAdminTable.innerHTML="";
-
-USERS.forEach(u=>{
-
-let key="history_"+u.user;
-
-let h=JSON.parse(localStorage.getItem(key)||"[]");
-
-h.forEach(item=>{
-
-let tr=document.createElement("tr");
-
-let preview=item.data.substring(0,80).replace(/\n/g," ");
-
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${item.date}</td>
-<td>${preview}...</td>
-`;
-
-historyAdminTable.appendChild(tr);
-
-});
-
-});
-
-}
 </script>
 
 </body>
 </html>
-```
