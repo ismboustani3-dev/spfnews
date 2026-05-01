@@ -1,23 +1,51 @@
+```javascript id="h5k2q1"
 /* ==========================================================
-WMN3 DNS PRO - FULL FINAL SCRIPT
-LOGIN + USER CREATE FIX + DATABASE FIX + ADMIN + HISTORY
+WMN3 DNS PRO - FULL FINAL AUTO FIX SCRIPT
+LOGIN FIX + AUTO RESET DB + ADMIN + USERS + HISTORY
 ========================================================== */
 
-/* ==========================
-DATABASE INIT
-========================== */
 let USERS = [];
 let currentUser = null;
 
-function initUsers(){
+/* ==========================
+HELPERS
+========================== */
+function byId(id){
+return document.getElementById(id);
+}
 
-let saved = localStorage.getItem("usersDB");
+function saveUsers(){
+localStorage.setItem("usersDB", JSON.stringify(USERS));
+}
 
-if(saved){
+function loadUsers(){
+try{
+USERS = JSON.parse(localStorage.getItem("usersDB")) || [];
+}catch(e){
+USERS = [];
+}
+}
 
-USERS = JSON.parse(saved);
+function now(){
+return new Date().toLocaleString();
+}
 
-}else{
+function lines(id){
+
+let el = byId(id);
+if(!el) return [];
+
+return el.value
+.split('\n')
+.map(x=>x.trim())
+.filter(x=>x);
+
+}
+
+/* ==========================
+DEFAULT USERS
+========================== */
+function defaultUsers(){
 
 USERS = [
 {
@@ -38,43 +66,45 @@ blocked:false
 }
 ];
 
-localStorage.setItem("usersDB", JSON.stringify(USERS));
-}
+saveUsers();
 
 }
 
 /* ==========================
-HELPERS
+INIT DATABASE AUTO FIX
 ========================== */
-function byId(id){
-return document.getElementById(id);
+function initUsers(){
+
+loadUsers();
+
+if(!Array.isArray(USERS) || USERS.length===0){
+
+defaultUsers();
+return;
+
 }
 
-function saveUsers(){
-localStorage.setItem("usersDB", JSON.stringify(USERS));
+let hasAdmin = USERS.find(x=>x.user==="admin");
+
+if(!hasAdmin){
+
+USERS.unshift({
+user:"admin",
+pass:"123456",
+role:"admin",
+online:false,
+lastSeen:"-",
+blocked:false
+});
+
+saveUsers();
+
 }
 
-function loadUsers(){
-USERS = JSON.parse(localStorage.getItem("usersDB")) || [];
-}
-
-function now(){
-return new Date().toLocaleString();
-}
-
-function lines(id){
-
-let el = byId(id);
-if(!el) return [];
-
-return el.value
-.split('\n')
-.map(x=>x.trim())
-.filter(x=>x);
 }
 
 /* ==========================
-NOTIFY
+NOTIFICATIONS
 Need HTML:
 <div id="liveNotif"></div>
 ========================== */
@@ -120,18 +150,19 @@ openDashboard(found);
 }
 
 /* ==========================
-LOGIN
+LOGIN FIXED
 ========================== */
 function login(){
 
+initUsers();
 loadUsers();
 
 let u = byId("username").value.trim();
 let p = byId("password").value.trim();
 
 let found = USERS.find(x =>
-x.user.trim() === u &&
-x.pass.trim() === p
+String(x.user).trim() === u &&
+String(x.pass).trim() === p
 );
 
 if(!found){
@@ -213,32 +244,10 @@ saveUsers();
 
 }
 
-notify("🔴 "+currentUser.user+" logged out");
-
 }
 
 localStorage.removeItem("activeUser");
-
-setTimeout(()=>{
 location.reload();
-},500);
-
-}
-
-/* ==========================
-STATS
-========================== */
-function renderStats(){
-
-let box = byId("statsGrid");
-if(!box) return;
-
-box.innerHTML = `
-<div class="stat-box"><div>Users</div><div class="num">${USERS.length}</div></div>
-<div class="stat-box"><div>Online</div><div class="num">${USERS.filter(x=>x.online).length}</div></div>
-<div class="stat-box"><div>Admins</div><div class="num">${USERS.filter(x=>x.role==="admin").length}</div></div>
-<div class="stat-box"><div>Members</div><div class="num">${USERS.filter(x=>x.role==="member").length}</div></div>
-`;
 
 }
 
@@ -318,7 +327,7 @@ function renderUsers(){
 let box = byId("usersTable");
 if(!box) return;
 
-box.innerHTML = "";
+box.innerHTML="";
 
 USERS.forEach(u=>{
 
@@ -339,6 +348,23 @@ box.appendChild(tr);
 }
 
 /* ==========================
+STATS
+========================== */
+function renderStats(){
+
+let box = byId("statsGrid");
+if(!box) return;
+
+box.innerHTML = `
+<div class="stat-box"><div>Users</div><div class="num">${USERS.length}</div></div>
+<div class="stat-box"><div>Online</div><div class="num">${USERS.filter(x=>x.online).length}</div></div>
+<div class="stat-box"><div>Admins</div><div class="num">${USERS.filter(x=>x.role==="admin").length}</div></div>
+<div class="stat-box"><div>Members</div><div class="num">${USERS.filter(x=>x.role==="member").length}</div></div>
+`;
+
+}
+
+/* ==========================
 HISTORY
 ========================== */
 function saveHistory(result){
@@ -347,9 +373,7 @@ if(!currentUser) return;
 
 let key = "history_"+currentUser.user;
 
-let h = JSON.parse(
-localStorage.getItem(key) || "[]"
-);
+let h = JSON.parse(localStorage.getItem(key)||"[]");
 
 h.unshift({
 date:now(),
@@ -358,10 +382,7 @@ data:result
 
 h = h.slice(0,50);
 
-localStorage.setItem(
-key,
-JSON.stringify(h)
-);
+localStorage.setItem(key, JSON.stringify(h));
 
 renderHistory();
 
@@ -382,7 +403,7 @@ let h = JSON.parse(
 localStorage.getItem("history_"+currentUser.user)||"[]"
 );
 
-box.innerHTML = "";
+box.innerHTML="";
 
 h.forEach(item=>{
 
@@ -416,7 +437,7 @@ localStorage.getItem("history_"+u.user)||"[]"
 
 h.forEach(item=>{
 
-let tr=document.createElement("tr");
+let tr = document.createElement("tr");
 
 tr.innerHTML=`
 <td>${u.user}</td>
@@ -461,12 +482,11 @@ GENERATORS
 ========================== */
 function generateSPF(){
 
-let d = lines("spfDomains");
-let s = lines("spfSubs");
-let i = lines("spfIps");
+let d=lines("spfDomains");
+let s=lines("spfSubs");
+let i=lines("spfIps");
 
-let txt = i.map(ip=>"ip4:"+ip).join(" ");
-
+let txt=i.map(ip=>"ip4:"+ip).join(" ");
 let out="";
 
 d.forEach(domain=>{
@@ -491,9 +511,9 @@ setOutput(out);
 
 function generateMX(){
 
-let d = lines("mxDomains");
-let s = lines("mxSubs");
-let i = lines("mxIps").join(";");
+let d=lines("mxDomains");
+let s=lines("mxSubs");
+let i=lines("mxIps").join(";");
 
 let out="";
 
@@ -519,9 +539,9 @@ setOutput(out);
 
 function generateA(){
 
-let d = lines("aDomains");
-let s = lines("aSubs");
-let i = lines("aIps").join(";");
+let d=lines("aDomains");
+let s=lines("aSubs");
+let i=lines("aIps").join(";");
 
 let out="";
 
@@ -546,6 +566,16 @@ setOutput(out);
 }
 
 /* ==========================
+RESET DB BUTTON (OPTIONAL)
+========================== */
+function resetDB(){
+
+localStorage.clear();
+location.reload();
+
+}
+
+/* ==========================
 START
 ========================== */
 window.onload = function(){
@@ -554,3 +584,4 @@ initUsers();
 autoLogin();
 
 };
+```
