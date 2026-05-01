@@ -1,29 +1,23 @@
-```javascript id="h5k2q1"
-/* ==========================================================
-WMN3 DNS PRO - FULL FINAL AUTO FIX SCRIPT
-LOGIN FIX + AUTO RESET DB + ADMIN + USERS + HISTORY
-========================================================== */
+/* ===========================
+ADMIN FULL ACCESS VERSION
+BADDEL BIH app.js KAMEL
+=========================== */
 
-let USERS = [];
-let currentUser = null;
+let USERS = JSON.parse(localStorage.getItem("usersDB")) || [
+{user:"admin",pass:"123456",role:"admin",online:false,lastSeen:"-",blocked:false},
+{user:"user1",pass:"111111",role:"member",online:false,lastSeen:"-",blocked:false},
+{user:"user2",pass:"222222",role:"member",online:false,lastSeen:"-",blocked:false}
+];
 
-/* ==========================
-HELPERS
-========================== */
+let currentUser=null;
+
+/* helpers */
+function saveUsers(){
+localStorage.setItem("usersDB",JSON.stringify(USERS));
+}
+
 function byId(id){
 return document.getElementById(id);
-}
-
-function saveUsers(){
-localStorage.setItem("usersDB", JSON.stringify(USERS));
-}
-
-function loadUsers(){
-try{
-USERS = JSON.parse(localStorage.getItem("usersDB")) || [];
-}catch(e){
-USERS = [];
-}
 }
 
 function now(){
@@ -31,245 +25,215 @@ return new Date().toLocaleString();
 }
 
 function lines(id){
-
-let el = byId(id);
-if(!el) return [];
-
-return el.value
-.split('\n')
-.map(x=>x.trim())
-.filter(x=>x);
-
+return byId(id).value.split('\n').map(x=>x.trim()).filter(x=>x);
 }
 
-/* ==========================
-DEFAULT USERS
-========================== */
-function defaultUsers(){
-
-USERS = [
-{
-user:"admin",
-pass:"123456",
-role:"admin",
-online:false,
-lastSeen:"-",
-blocked:false
-},
-{
-user:"user1",
-pass:"111111",
-role:"member",
-online:false,
-lastSeen:"-",
-blocked:false
-}
-];
-
-saveUsers();
-
+function logAction(txt){
+let logs=JSON.parse(localStorage.getItem("activityLogs")||"[]");
+logs.unshift(now()+" - "+txt);
+logs=logs.slice(0,200);
+localStorage.setItem("activityLogs",JSON.stringify(logs));
+renderLogs();
 }
 
-/* ==========================
-INIT DATABASE AUTO FIX
-========================== */
-function initUsers(){
-
-loadUsers();
-
-if(!Array.isArray(USERS) || USERS.length===0){
-
-defaultUsers();
-return;
-
-}
-
-let hasAdmin = USERS.find(x=>x.user==="admin");
-
-if(!hasAdmin){
-
-USERS.unshift({
-user:"admin",
-pass:"123456",
-role:"admin",
-online:false,
-lastSeen:"-",
-blocked:false
-});
-
-saveUsers();
-
-}
-
-}
-
-/* ==========================
-NOTIFICATIONS
-Need HTML:
-<div id="liveNotif"></div>
-========================== */
-function notify(msg){
-
-let box = byId("liveNotif");
-if(!box) return;
-
-let div = document.createElement("div");
-div.className = "toast";
-div.innerText = msg;
-
-box.appendChild(div);
-
-setTimeout(()=>{
-div.remove();
-},3000);
-
-}
-
-/* ==========================
-AUTO LOGIN
-========================== */
-function autoLogin(){
-
-loadUsers();
-
-let saved = localStorage.getItem("activeUser");
-if(!saved) return;
-
-let found = USERS.find(x=>x.user===saved);
-if(!found) return;
-
-currentUser = found;
-
-found.online = true;
-found.lastSeen = now();
-
-saveUsers();
-
-openDashboard(found);
-
-}
-
-/* ==========================
-LOGIN FIXED
-========================== */
+/* LOGIN */
 function login(){
 
-initUsers();
-loadUsers();
+let u=byId("username").value.trim();
+let p=byId("password").value.trim();
 
-let u = byId("username").value.trim();
-let p = byId("password").value.trim();
-
-let found = USERS.find(x =>
-String(x.user).trim() === u &&
-String(x.pass).trim() === p
-);
+let found=USERS.find(x=>x.user===u && x.pass===p);
 
 if(!found){
-
-if(byId("errorMsg"))
-byId("errorMsg").innerText = "Invalid Login";
-
+byId("errorMsg").innerText="Invalid Login";
 return;
 }
 
 if(found.blocked){
-
-if(byId("errorMsg"))
-byId("errorMsg").innerText = "Blocked User";
-
+byId("errorMsg").innerText="Account Blocked";
 return;
 }
 
-currentUser = found;
-
-localStorage.setItem("activeUser", found.user);
-
-found.online = true;
-found.lastSeen = now();
+currentUser=found;
+found.online=true;
+found.lastSeen=now();
 
 saveUsers();
 
-openDashboard(found);
-
-notify("🟢 "+found.user+" logged in");
-
-}
-
-/* ==========================
-OPEN DASHBOARD
-========================== */
-function openDashboard(user){
-
-if(byId("loginPage"))
 byId("loginPage").style.display="none";
-
-if(byId("dashboard"))
 byId("dashboard").style.display="block";
-
-if(byId("welcome"))
-byId("welcome").innerHTML =
-"👤 "+user.user+" ("+user.role+")";
+byId("welcome").innerHTML="👤 "+found.user+" ("+found.role+")";
 
 renderStats();
 renderHistory();
 
-if(user.role==="admin"){
-
-if(byId("adminPanel"))
+if(found.role==="admin"){
 byId("adminPanel").style.display="block";
-
 renderUsers();
 renderAdminHistory();
-
+renderLogs();
 }
 
+logAction(found.user+" logged in");
 }
 
-/* ==========================
-LOGOUT
-========================== */
 function logout(){
 
 if(currentUser){
-
-let f = USERS.find(x=>x.user===currentUser.user);
-
+let f=USERS.find(x=>x.user===currentUser.user);
 if(f){
-
 f.online=false;
 f.lastSeen=now();
-
 saveUsers();
-
+logAction(f.user+" logged out");
+}
 }
 
-}
-
-localStorage.removeItem("activeUser");
 location.reload();
+}
+
+/* OUTPUT */
+function setOutput(txt){
+byId("output").value=txt.trim();
+saveHistory(txt.trim());
+}
+
+function copyOutput(){
+byId("output").select();
+document.execCommand("copy");
+alert("Copied");
+}
+
+/* HISTORY */
+function saveHistory(result){
+
+let key="history_"+currentUser.user;
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+h.unshift({
+date:now(),
+data:result
+});
+
+h=h.slice(0,50);
+
+localStorage.setItem(key,JSON.stringify(h));
+
+renderHistory();
+renderStats();
+
+if(currentUser.role==="admin"){
+renderAdminHistory();
+}
+
+logAction(currentUser.user+" generated records");
+}
+
+function renderHistory(){
+
+let key="history_"+currentUser.user;
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+byId("historyList").innerHTML="";
+
+h.forEach(item=>{
+
+let div=document.createElement("div");
+div.className="history-item";
+div.innerHTML=item.date;
+
+div.onclick=()=>{
+byId("output").value=item.data;
+};
+
+byId("historyList").appendChild(div);
+
+});
+}
+
+function renderAdminHistory(){
+
+let box=byId("historyAdminTable");
+if(!box) return;
+
+box.innerHTML="";
+
+let search=byId("searchHistoryUser").value.toLowerCase().trim();
+
+USERS.forEach(u=>{
+
+if(search && !u.user.toLowerCase().includes(search)) return;
+
+let h=JSON.parse(localStorage.getItem("history_"+u.user)||"[]");
+
+h.forEach(item=>{
+
+let prev=item.data.substring(0,80).replace(/\n/g," ");
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${u.user}</td>
+<td>${item.date}</td>
+<td>${prev}...</td>
+`;
+
+box.appendChild(tr);
+
+});
+
+});
+}
+
+/* USERS TABLE */
+function renderUsers(){
+
+let box=byId("usersTable");
+if(!box) return;
+
+box.innerHTML="";
+
+let search=byId("searchUser").value.toLowerCase().trim();
+
+USERS.forEach(u=>{
+
+if(search && !u.user.toLowerCase().includes(search)) return;
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${u.user}</td>
+<td>${u.role}</td>
+<td>${u.online ? '🟢 Online':'🔴 Offline'}</td>
+<td>${u.lastSeen}</td>
+<td>
+<button onclick="editUser('${u.user}')">Edit</button>
+<button onclick="changeRole('${u.user}')">Role</button>
+<button onclick="resetPass('${u.user}')">Pass</button>
+<button onclick="forceLogout('${u.user}')">Logout</button>
+<button onclick="clearUserHistory('${u.user}')">History</button>
+<button onclick="blockUser('${u.user}')">${u.blocked?'Unblock':'Block'}</button>
+<button class="red" onclick="deleteUser('${u.user}')">Delete</button>
+</td>
+`;
+
+box.appendChild(tr);
+
+});
 
 }
 
-/* ==========================
-ADD USER
-========================== */
+/* ADMIN ACTIONS */
+
 function addUser(){
 
-loadUsers();
+let u=byId("newUser").value.trim();
+let p=byId("newPass").value.trim();
+let r=byId("newRole").value;
 
-let u = byId("newUser").value.trim();
-let p = byId("newPass").value.trim();
-let r = byId("newRole").value;
+if(!u || !p) return;
 
-if(!u || !p){
-alert("Fill fields");
-return;
-}
-
-if(USERS.find(x =>
-x.user.toLowerCase() === u.toLowerCase()
-)){
+if(USERS.find(x=>x.user===u)){
 alert("User exists");
 return;
 }
@@ -284,202 +248,183 @@ blocked:false
 });
 
 saveUsers();
-
 renderUsers();
 renderStats();
 
-notify("➕ User created: "+u);
-
-byId("newUser").value="";
-byId("newPass").value="";
-
+logAction("admin added "+u);
 }
 
-/* ==========================
-DELETE USER
-========================== */
 function deleteUser(name){
 
-if(name==="admin"){
-alert("Cannot delete admin");
-return;
+if(name==="admin") return;
+
+if(!confirm("Delete "+name+" ?")) return;
+
+USERS=USERS.filter(x=>x.user!==name);
+
+saveUsers();
+renderUsers();
+renderStats();
+
+logAction("admin deleted "+name);
 }
 
-USERS = USERS.filter(x=>x.user!==name);
+function editUser(name){
 
-localStorage.removeItem("history_"+name);
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+let newName=prompt("New username:",f.user);
+
+if(!newName) return;
+
+f.user=newName;
+
+saveUsers();
+renderUsers();
+
+logAction("admin edited username "+name+" => "+newName);
+}
+
+function resetPass(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+let np=prompt("New password:");
+
+if(!np) return;
+
+f.pass=np;
 
 saveUsers();
 
+logAction("admin changed password for "+name);
+}
+
+function changeRole(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.role=(f.role==="admin")?"member":"admin";
+
+saveUsers();
 renderUsers();
+
+logAction("admin changed role for "+name);
+}
+
+function forceLogout(name){
+
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.online=false;
+f.lastSeen=now();
+
+saveUsers();
+renderUsers();
+
+logAction("admin forced logout "+name);
+}
+
+function clearUserHistory(name){
+
+if(!confirm("Clear history of "+name+" ?")) return;
+
+localStorage.removeItem("history_"+name);
+
+renderUsers();
+renderAdminHistory();
 renderStats();
-renderAdminHistory();
 
-notify("🗑 User deleted: "+name);
-
+logAction("admin cleared history of "+name);
 }
 
-/* ==========================
-USERS TABLE
-========================== */
-function renderUsers(){
+function blockUser(name){
 
-let box = byId("usersTable");
+let f=USERS.find(x=>x.user===name);
+if(!f) return;
+
+f.blocked=!f.blocked;
+
+saveUsers();
+renderUsers();
+
+logAction("admin toggled block for "+name);
+}
+
+/* LOGS */
+function renderLogs(){
+
+let box=byId("logsBox");
 if(!box) return;
 
 box.innerHTML="";
 
-USERS.forEach(u=>{
+let logs=JSON.parse(localStorage.getItem("activityLogs")||"[]");
 
-let tr = document.createElement("tr");
+logs.forEach(x=>{
 
-tr.innerHTML = `
-<td>${u.user}</td>
-<td>${u.role}</td>
-<td>${u.online ? '🟢 Online':'🔴 Offline'}</td>
-<td>${u.lastSeen}</td>
-<td><button onclick="deleteUser('${u.user}')">Delete</button></td>
-`;
-
-box.appendChild(tr);
-
-});
-
-}
-
-/* ==========================
-STATS
-========================== */
-function renderStats(){
-
-let box = byId("statsGrid");
-if(!box) return;
-
-box.innerHTML = `
-<div class="stat-box"><div>Users</div><div class="num">${USERS.length}</div></div>
-<div class="stat-box"><div>Online</div><div class="num">${USERS.filter(x=>x.online).length}</div></div>
-<div class="stat-box"><div>Admins</div><div class="num">${USERS.filter(x=>x.role==="admin").length}</div></div>
-<div class="stat-box"><div>Members</div><div class="num">${USERS.filter(x=>x.role==="member").length}</div></div>
-`;
-
-}
-
-/* ==========================
-HISTORY
-========================== */
-function saveHistory(result){
-
-if(!currentUser) return;
-
-let key = "history_"+currentUser.user;
-
-let h = JSON.parse(localStorage.getItem(key)||"[]");
-
-h.unshift({
-date:now(),
-data:result
-});
-
-h = h.slice(0,50);
-
-localStorage.setItem(key, JSON.stringify(h));
-
-renderHistory();
-
-if(currentUser.role==="admin"){
-renderAdminHistory();
-}
-
-}
-
-function renderHistory(){
-
-if(!currentUser) return;
-
-let box = byId("historyList");
-if(!box) return;
-
-let h = JSON.parse(
-localStorage.getItem("history_"+currentUser.user)||"[]"
-);
-
-box.innerHTML="";
-
-h.forEach(item=>{
-
-let div = document.createElement("div");
-div.className="history-item";
-div.innerHTML=item.date;
-
-div.onclick=()=>{
-if(byId("output"))
-byId("output").value=item.data;
-};
+let div=document.createElement("div");
+div.className="log-item";
+div.innerHTML=x;
 
 box.appendChild(div);
 
 });
-
 }
 
-function renderAdminHistory(){
+/* STATS */
+function renderStats(){
 
-let box = byId("historyAdminTable");
-if(!box) return;
+let total=USERS.length;
+let online=USERS.filter(x=>x.online).length;
 
-box.innerHTML="";
+let topUser="-";
+let max=0;
 
 USERS.forEach(u=>{
+let h=JSON.parse(localStorage.getItem("history_"+u.user)||"[]");
+if(h.length>max){
+max=h.length;
+topUser=u.user;
+}
+});
 
-let h = JSON.parse(
-localStorage.getItem("history_"+u.user)||"[]"
-);
-
-h.forEach(item=>{
-
-let tr = document.createElement("tr");
-
-tr.innerHTML=`
-<td>${u.user}</td>
-<td>${item.date}</td>
-<td>${item.data.substring(0,70)}...</td>
+byId("statsGrid").innerHTML=`
+<div class="stat-box"><div>Users</div><div class="num">${total}</div></div>
+<div class="stat-box"><div>Online</div><div class="num">${online}</div></div>
+<div class="stat-box"><div>Top User</div><div class="num">${topUser}</div></div>
+<div class="stat-box"><div>Records</div><div class="num">${max}</div></div>
 `;
-
-box.appendChild(tr);
-
-});
-
-});
-
 }
 
-/* ==========================
-OUTPUT
-========================== */
-function setOutput(txt){
-
-if(byId("output"))
-byId("output").value = txt.trim();
-
-saveHistory(txt.trim());
-
+/* EXPORT */
+function exportTXT(){
+download("output.txt",byId("output").value);
 }
 
-function copyOutput(){
-
-let out = byId("output");
-if(!out) return;
-
-out.select();
-document.execCommand("copy");
-
-notify("📋 Copied");
-
+function exportCSV(){
+download("output.csv",byId("output").value.replace(/\n/g,","));
 }
 
-/* ==========================
-GENERATORS
-========================== */
+function exportJSON(){
+download("output.json",JSON.stringify({output:byId("output").value},null,2));
+}
+
+function download(name,data){
+
+let blob=new Blob([data],{type:"text/plain"});
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+a.download=name;
+a.click();
+}
+
+/* GENERATORS */
 function generateSPF(){
 
 let d=lines("spfDomains");
@@ -490,23 +435,16 @@ let txt=i.map(ip=>"ip4:"+ip).join(" ");
 let out="";
 
 d.forEach(domain=>{
-
 if(s.length){
-
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`;
+out+=`${domain},${sub},TXT,"v=spf1 ${txt} -all"\n`;
 });
-
 }else{
-
-out += `${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;
-
+out+=`${domain},${domain},TXT,"v=spf1 ${txt} -all"\n`;
 }
-
 });
 
 setOutput(out);
-
 }
 
 function generateMX(){
@@ -518,23 +456,16 @@ let i=lines("mxIps").join(";");
 let out="";
 
 d.forEach(domain=>{
-
 if(s.length){
-
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,MXrecords:${i}\n`;
+out+=`${domain},${sub},TXT,MXrecords:${i}\n`;
 });
-
 }else{
-
-out += `${domain},${domain},TXT,MXrecords:${i}\n`;
-
+out+=`${domain},${domain},TXT,MXrecords:${i}\n`;
 }
-
 });
 
 setOutput(out);
-
 }
 
 function generateA(){
@@ -546,42 +477,18 @@ let i=lines("aIps").join(";");
 let out="";
 
 d.forEach(domain=>{
-
 if(s.length){
-
 s.forEach(sub=>{
-out += `${domain},${sub},TXT,Arecords:${i}\n`;
+out+=`${domain},${sub},TXT,Arecords:${i}\n`;
 });
-
 }else{
-
-out += `${domain},${domain},TXT,Arecords:${i}\n`;
-
+out+=`${domain},${domain},TXT,Arecords:${i}\n`;
 }
-
 });
 
 setOutput(out);
-
 }
 
-/* ==========================
-RESET DB BUTTON (OPTIONAL)
-========================== */
-function resetDB(){
-
-localStorage.clear();
-location.reload();
-
+function toggleTheme(){
+document.body.classList.toggle("light");
 }
-
-/* ==========================
-START
-========================== */
-window.onload = function(){
-
-initUsers();
-autoLogin();
-
-};
-```
